@@ -6,9 +6,10 @@
   "main": "index.js",
   "author": "sirawt",
   "files": [
-    "**/*.sol",
-    "!/abstracts/extensions/",
-    "!/mocks/**/*"
+    "abstracts/**/*",
+    "interfaces/**/*",
+    "libraries/**/*",
+    "!**/extensions/**/*"
   ],
   "repository": "https://github.com/MASDXI/Forest.git",
   "scripts": {},

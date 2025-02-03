@@ -12,8 +12,6 @@
     "clean": "npx hardhat clean",
     "compile": "npx hardhat compile",
     "coverage": "npx hardhat coverage",
-    "geth:start": "cd $(pwd)/blockchain/geth && $(pwd)/scripts/start.sh",
-    "geth:stop": "cd $(pwd)/blockchain/geth && $(pwd)/scripts/stop.sh",
     "node:start": "npx hardhat node",
     "simulation": "echo \"Not implemented yet.\"",
     "test": "npx hardhat clean && npx hardhat test",

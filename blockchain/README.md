@@ -1,21 +1,16 @@
 # Simulator
 
+## Scenario for testing
+
+- money mule
+- smurfing
+
 ## What we measurement?
 
-- Step to complete suspend certain amount of fund.
-- Step to complete suspend relevant transaction.
-
-> [!NOTE] Response Time, Recovery Time and Post-Incident Analysis
-
-## Test scenario
-
-- Scenario generate 100,000 transactions suspicious `x` account.
-- Scenario generate 100,000 transactions suspicious `x` transaction.
-- Scenario generate 100,000 transactions suspicious `x` uncertain amount of each suspicious `x` account.
-
-Simulator provide 2 clients `geth` and `besu`.
-
-> [!IMPORTANT] geth v1.13.15 is last version that support Proof of Authority.
+- Count step/effort to complete suspend all relevant fund/transaction.
+- TBD
+  
+<!-- Response Time, Recovery Time and Post-Incident Analysis -->
 
 ## Prerequisite
 
@@ -26,19 +21,24 @@ Simulator provide 2 clients `geth` and `besu`.
 
 Start local network with command.
 
-```shell
-./CLIENT/scripts/start.sh
+``` shell
+yarn besu:start
 ```
 
 Stop local network with command.
 
-```shell
-./CLIENT/scripts/stop.sh
+``` shell
+yarn besu:stop
 ```
 
 ## Network Configuration
 
-HTTP: `http://localhost:8545`  
+In simulator the private network will use `hyperledger/besu` as blockchain client.
+
+> [!WARNING] go-ethereum
+> If you preferred to use `geth` last version that support Proof of Authority (Clique) is `v1.13.15`
+
+API_HTTP: `http://localhost:8545`  
 API_WS: `ws://localhost:8546`  
 CHAIN_ID: `8080`
 
@@ -58,6 +58,6 @@ with `x`
 
 ## Reading result
 
-```
+``` shell
 # command
 ```

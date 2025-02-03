@@ -64,7 +64,7 @@ abstract contract FreezeToken {
      * @param tokenId The identifier of the token to be unfrozen.
      * @dev Throws a TokenNotFrozen error if the token is not frozen.
      */
-    function unsfreezeToken(bytes32 tokenId) public {
+    function unfreezeToken(bytes32 tokenId) public {
         if (!_frozenToken[tokenId]) {
             revert TokenNotFrozen();
         }

@@ -58,7 +58,8 @@ describe("ERC20", function () {
       await token.connect(alice).approve(spenderAddress, amount);
       await token.setFreezeBalance(aliceAddress, frozenAmount);
       expect(await token.getFrozenBalance(aliceAddress)).to.equal(frozenAmount);
-      await expect(token.connect(owner).transferFrom(aliceAddress, bobAddress, amount - frozenAmount)).not.to.be.reverted;
+      await expect(token.connect(owner).transferFrom(aliceAddress, bobAddress, amount - frozenAmount)).not.to.be
+        .reverted;
       await expect(token.connect(owner).transferFrom(aliceAddress, bobAddress, frozenAmount)).to.be.reverted;
     });
   });

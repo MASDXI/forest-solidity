@@ -21,6 +21,7 @@ library UnspentTransactionOutput {
         uint256 value;
         address owner;
         bool spent;
+        bytes32 extraData;
     }
 
     /**
@@ -127,7 +128,8 @@ library UnspentTransactionOutput {
         TransactionOutput memory txOutput,
         bytes32 input,
         bytes32 id,
-        address creator
+        address creator,
+        bytes32 extraData
     ) internal {
         if (txOutput.value == 0) {
             revert TransactionZeroValue();
@@ -135,7 +137,7 @@ library UnspentTransactionOutput {
         if (_transactionExist(self, id)) {
             revert TransactionExist();
         }
-        self.transactions[id] = Transaction(input, txOutput.value, txOutput.account, false);
+        self.transactions[id] = Transaction(input, txOutput.value, txOutput.account, false, extraData);
         self.nonces[creator]++;
         self.size[txOutput.account]++;
 

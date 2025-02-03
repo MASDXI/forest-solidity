@@ -15,7 +15,7 @@ library Forest {
         address owner;
     }
 
-    struct Ledger {
+    struct DAG {
         mapping(address => uint256) nonces;
         mapping(bytes32 => uint256) hierarchy;
         mapping(bytes32 => Tx) txs;
@@ -29,7 +29,7 @@ library Forest {
     error TransactionInsufficient(uint256 value, uint256 spend);
     error TransactionZeroValue();
 
-    function contains(Ledger storage self, bytes32 id) private view returns (bool) {
+    function contains(DAG storage self, bytes32 id) private view returns (bool) {
         return self.txs[id].value != uint256(0);
     }
 
@@ -37,35 +37,35 @@ library Forest {
         return keccak256(abi.encode(block.chainid, account, nonce));
     }
 
-    function getTx(Ledger storage self, bytes32 id) internal view returns (Tx memory) {
+    function getTx(DAG storage self, bytes32 id) internal view returns (Tx memory) {
         return self.txs[id];
     }
 
-    function getTxLevel(Ledger storage self, bytes32 id) internal view returns (uint256) {
+    function getTxLevel(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.txs[id].level;
     }
 
-    function getTxParent(Ledger storage self, bytes32 id) internal view returns (bytes32) {
+    function getTxParent(DAG storage self, bytes32 id) internal view returns (bytes32) {
         return self.txs[id].parent;
     }
 
-    function getTxRoot(Ledger storage self, bytes32 id) internal view returns (bytes32) {
+    function getTxRoot(DAG storage self, bytes32 id) internal view returns (bytes32) {
         return self.txs[id].root;
     }
 
-    function getTxValue(Ledger storage self, bytes32 id) internal view returns (uint256) {
+    function getTxValue(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.txs[id].value;
     }
 
-    function getTxCount(Ledger storage self, address account) internal view returns (uint256) {
+    function getTxCount(DAG storage self, address account) internal view returns (uint256) {
         return self.nonces[account];
     }
 
-    function getTxHierarchy(Ledger storage self, bytes32 id) internal view returns (uint256) {
+    function getTxHierarchy(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.hierarchy[id];
     }
 
-    function createTx(Ledger storage self, Tx memory newTx, address spender) internal {
+    function createTx(DAG storage self, Tx memory newTx, address spender) internal {
         if (newTx.value == 0) revert TransactionZeroValue();
         bytes32 newId = calcTxHash(spender, self.nonces[spender]);
         self.txs[newId] = newTx;
@@ -76,7 +76,7 @@ library Forest {
         emit TransactionCreated(newId, newTx.root, spender);
     }
 
-    function spendTx(Ledger storage self, bytes32 id, address spender, address to, uint256 value) internal {
+    function spendTx(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
         Tx storage ptr = self.txs[id];
         if (msg.sender != ptr.owner) revert TransactionUnauthorized();
         uint256 currentValue = ptr.value;

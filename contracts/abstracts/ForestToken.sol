@@ -12,9 +12,9 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 abstract contract ForestToken is ERC20, IForestERC20 {
-    using Forest for Forest.Ledger;
+    using Forest for Forest.DAG;
 
-    Forest.Ledger private _ledger;
+    Forest.DAG private _dag;
 
     /**
      * @dev Constructor to initialize the ERC20 token with a name and symbol.
@@ -29,7 +29,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
      * @return The transaction details.
      */
     function _transaction(bytes32 tokenId) internal view returns (Forest.Tx memory) {
-        return _ledger.getTx(tokenId);
+        return _dag.getTx(tokenId);
     }
 
     /**
@@ -40,7 +40,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
      * @param value The amount of tokens to transfer.
      */
     function _transfer(address from, address to, bytes32 tokenId, uint256 value) internal virtual {
-        _ledger.spendTx(tokenId, from, to, value);
+        _dag.spendTx(tokenId, from, to, value);
         _update(from, to, value);
     }
 
@@ -50,7 +50,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
      * @param value The amount of tokens to mint.
      */
     function _mintTransaction(address account, uint256 value) internal {
-        _ledger.createTx(Forest.Tx(bytes32(0), bytes32(0), value, 0, account), address(0));
+        _dag.createTx(Forest.Tx(bytes32(0), bytes32(0), value, 0, account), address(0));
         _mint(account, value);
     }
 
@@ -61,7 +61,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
      * @param value The amount of tokens to burn.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value) internal {
-        _ledger.spendTx(tokenId, account, address(0), value);
+        _dag.spendTx(tokenId, account, address(0), value);
         _burn(account, value);
     }
 

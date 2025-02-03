@@ -73,14 +73,14 @@ interface IForest {
 
 ## Rationale
 
-| Features                                                                  | ERC-20 | UTXO | eUTXO | Forest |
-| ------------------------------------------------------------------------- | ------ | ---- | ----- | ------ |
-| Freeze the `sender` account.                                              | ✓      | ✓    | ✓     | ✓      |
-| Freeze the `recipient` account.                                           | ✓      | ✓    | ✓     | ✓      |
-| Freeze the certain `amount` token.                                        | ✗      | ✓    | ✓     | ✓      |
-| Freeze the specifics `tokenId` or `txId`.                                 | ✗      | ✓    | ✓     | ✓      |
-| Freeze the specifics `tokenId` or `TxId` that relevant to the root.       | ✗      | ✗    | ✓     | ✓      |
-| Freeze all `tokenId` or `TxId` before or after specifics hierarchy level. | ✗      | ✗    | ✗     | ✓      |
+| Features                                                                  | ERC-20 | UTXO | Forest |
+| ------------------------------------------------------------------------- | ------ | ---- | ------ |
+| Freeze the `sender` account.                                              | ✓      | ✓    | ✓      |
+| Freeze the `recipient` account.                                           | ✓      | ✓    | ✓      |
+| Freeze the certain `amount` token.                                        | ✗      | ✓    | ✓      |
+| Freeze the specifics `tokenId` or `txId`.                                 | ✗      | ✓    | ✓      |
+| Freeze the specifics `tokenId` or `TxId` that relevant to the root.       | ✗      | ✓    | ✓      |
+| Freeze all `tokenId` or `TxId` before or after specifics hierarchy level. | ✗      | ✗    | ✓      |
 
 - `ERC-20` provide events and keep tracking each `Transfer`,  
   but the problem is the `ERC-20` model can't separate `clean money` from `dirty money`,  

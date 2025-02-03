@@ -39,13 +39,15 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
      * @param tokenId The identifier of the token transaction.
      * @param value The amount of tokens to transfer.
      * @param signature The signature associated with the transaction.
+     * @param extraData The extra data for transaction output.
      */
     function _transfer(
         address from,
         address to,
         bytes32 tokenId,
         uint256 value,
-        bytes memory signature
+        bytes memory signature,
+        bytes32 extraData
     ) internal virtual {
         uint256 txvalue = _UTXO.transactionValue(tokenId);
         if (txvalue < value) {
@@ -58,7 +60,8 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
                 UnspentTransactionOutput.TransactionOutput(value, to),
                 tokenId,
                 UnspentTransactionOutput.calculateTransactionHash(from, _UTXO.transactionCount(from)),
-                from
+                from,
+                extraData
             );
         }
         _update(from, to, value);
@@ -68,13 +71,15 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
      * @dev Internal function to mint tokens and create a transaction for the minted tokens.
      * @param account The address that will receive the minted tokens.
      * @param value The amount of tokens to mint and transfer.
+     * @param extraData The extra data for transaction output.
      */
-    function _mintTransaction(address account, uint256 value) internal {
+    function _mintTransaction(address account, uint256 value, bytes32 extraData) internal {
         _UTXO.createTransaction(
             UnspentTransactionOutput.TransactionOutput(value, account),
             bytes32(0),
             UnspentTransactionOutput.calculateTransactionHash(address(0), _UTXO.transactionCount(address(0))),
-            address(0)
+            address(0),
+            extraData
         );
         _mint(account, value);
     }
@@ -84,8 +89,9 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
      * @param account The address from which tokens will be burned.
      * @param tokenId The identifier of the token transaction to be burned.
      * @param value The amount of tokens to burn.
+     * @param extraData The extra data for transaction output.
      */
-    function _burnTransaction(address account, bytes32 tokenId, uint256 value) internal {
+    function _burnTransaction(address account, bytes32 tokenId, uint256 value, bytes32 extraData) internal {
         if (value == _UTXO.transactionValue(tokenId)) {
             _UTXO.consumeTransaction(tokenId, account);
         } else {
@@ -94,7 +100,8 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
                 UnspentTransactionOutput.TransactionOutput(value, account),
                 tokenId,
                 UnspentTransactionOutput.calculateTransactionHash(account, _UTXO.transactionCount(account)),
-                account
+                account,
+                extraData
             );
         }
         _burn(account, value);
@@ -146,6 +153,15 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
     }
 
     /**
+     * @dev Function to fetch the extra data of a UTXO transaction identified by its token ID.
+     * @param tokenId The identifier of the UTXO transaction.
+     * @return The extra data of the UTXO associated with the specified token ID.
+     */
+    function transactionExtraData(bytes32 tokenId) public view returns (bytes32) {
+        return _UTXO.transactionExtraData(tokenId);
+    }
+
+    /**
      * @dev Function to checks whether a UTXO transaction has been spent, identified by its token ID.
      * @param tokenId The identifier of the UTXO transaction.
      * @return True if the UTXO associated with the specified token ID has been spent, false otherwise.
@@ -170,7 +186,7 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
         uint256 value,
         bytes memory signature
     ) public virtual override returns (bool) {
-        _transfer(msg.sender, to, tokenId, value, signature);
+        _transfer(msg.sender, to, tokenId, value, signature, bytes32(""));
         return true;
     }
 
@@ -192,7 +208,7 @@ abstract contract UTXOToken is ERC20, IUTXOERC20 {
         bytes memory signature
     ) public virtual override returns (bool) {
         _spendAllowance(from, msg.sender, value);
-        _transfer(from, to, tokenId, value, signature);
+        _transfer(from, to, tokenId, value, signature, bytes32(""));
         return true;
     }
 }

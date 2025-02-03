@@ -22,25 +22,25 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
 
     // TODO
     // modifier checkFrozenLevel(bytes32 tokenId) {
-        // check equal
+        // check root equal check equal
         // _;
     // }
 
     // TODO
     // modifier checkFrozenBeforeLevel(bytes32 tokenId)  
-        // check less than
+        // check root equal and check less than
         // _;
     // }
 
     // TODO
     // modifier checkFrozenAfterLevel(bytes32 tokenId)  
-        // check greater than
+        // check root equal check greater than
         // _;
     // }
     
     // TODO
     // modifier checkFrozenInBetweenLevel(bytes32 tokenId)
-        // check greater than 'x' and less than 'y'
+        // check root equal check greater than 'x' and less than 'y'
         // _;
     // }
 

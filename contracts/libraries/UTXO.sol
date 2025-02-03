@@ -236,6 +236,16 @@ library UnspentTransactionOutput {
     }
 
     /**
+     * @notice Retrieves the owner of a transaction in the UTXO.
+     * @param self The UTXO storage.
+     * @param id The identifier of the transaction.
+     * @return The extraData  of the transaction.
+     */
+    function transactionExtraData(UTXO storage self, bytes32 id) internal view returns (bytes32) {
+        return self.transactions[id].extraData;
+    }
+
+    /**
      * @notice Retrieves the number of transactions associated with an account in the UTXO.
      * @param self The UTXO storage.
      * @param account The account address.

@@ -9,21 +9,11 @@ pragma solidity >=0.8.0 <0.9.0;
 abstract contract FreezeToken {
     mapping(bytes32 => bool) private _frozenToken;
 
-    /**
-     * @notice Error thrown when a token operation is attempted on a frozen token.
-     */
+    /** errors */
     error TokenFrozen();
-
-    /**
-     * @notice Error thrown when an operation is attempted to unfreeze a token that is not frozen.
-     */
     error TokenNotFrozen();
 
-    /**
-     * @notice Event emitted when a token is frozen or unfrozen.
-     * @param tokenId The identifier of the token.
-     * @param auth The status of the token, true if frozen, false if unfrozen.
-     */
+    /** events */
     event frozenToken(bytes32 indexed tokenId, bool indexed auth);
 
     /**

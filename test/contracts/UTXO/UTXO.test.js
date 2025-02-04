@@ -1,19 +1,14 @@
-const {time, loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-const {network} = require("hardhat");
-const {anyValue} = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
+const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 const {expect} = require("chai");
-const {encodeBytes32String, ZeroAddress, solidityPackedKeccak256, getBytes, isBytesLike, ZeroHash} = require("ethers");
+const {solidityPackedKeccak256, getBytes} = require("ethers");
+const {amount, freezeAmount, transferFrom, transfer, tokenMetadata} = require("../../utils/constant");
 
 describe("UTXO", function () {
-  const amount = 1000n;
-  const freezeAmount = 100n;
-  const overloadTransferMethod = "transfer(address,bytes32,uint256,bytes)";
-  const overloadTransferFromMethod = "transferFrom(address,address,bytes32,uint256,bytes)";
-
   async function deployTokenFixture() {
     const [owner, alice, bob, charlie, otherAccount] = await ethers.getSigners();
     const contract = await ethers.getContractFactory("MockUtxo");
-    const token = await contract.deploy("United States dollar", "USD");
+    const token = await contract.deploy(tokenMetadata.name, tokenMetadata.symbol);
+
     return {token, owner, alice, bob, charlie, otherAccount};
   }
 
@@ -28,7 +23,7 @@ describe("UTXO", function () {
       const hashed = solidityPackedKeccak256(["bytes32"], [tokenId]);
       const signature = await alice.signMessage(getBytes(hashed));
       expect(await token.balanceOf(aliceAddress)).to.equal(amount);
-      await token.connect(alice)[overloadTransferMethod](bobAddress, tokenId, amount, signature);
+      await token.connect(alice)[transfer.utxo](bobAddress, tokenId, amount, signature);
       expect(await token.balanceOf(aliceAddress)).to.equal(0);
       expect(await token.balanceOf(bobAddress)).to.equal(amount);
     });
@@ -45,7 +40,7 @@ describe("UTXO", function () {
       const signature = await alice.signMessage(getBytes(hashed));
       await token.connect(alice).approve(spenderAddress, amount);
       expect(await token.balanceOf(aliceAddress)).to.equal(amount);
-      await token.connect(owner)[overloadTransferFromMethod](aliceAddress, bobAddress, tokenId, amount, signature);
+      await token.connect(owner)[transferFrom.utxo](aliceAddress, bobAddress, tokenId, amount, signature);
       expect(await token.balanceOf(aliceAddress)).to.equal(0);
       expect(await token.balanceOf(bobAddress)).to.equal(amount);
     });

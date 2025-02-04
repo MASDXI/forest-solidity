@@ -1,17 +1,14 @@
 const {loadFixture} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
-const {network} = require("hardhat");
-const {anyValue} = require("@nomicfoundation/hardhat-chai-matchers/withArgs");
 const {expect} = require("chai");
-const {ZeroAddress} = require("ethers");
+const {amount, frozenAmount, tokenMetadata} = require("../../utils/constant");
 
+// skipping to test the ERC20 behavior because inherit from @openzeppelin/contracts
 describe("ERC20", function () {
-  const amount = 1000n;
-  const frozenAmount = 100n;
-
   async function deployTokenFixture() {
     const [owner, alice, bob, charlie, dave, otherAccount] = await ethers.getSigners();
     const contract = await ethers.getContractFactory("MockERC20");
-    const token = await contract.deploy("United States dollar", "USD");
+    const token = await contract.deploy(tokenMetadata.name, tokenMetadata.symbol);
+
     return {token, owner, alice, bob, charlie, dave, otherAccount};
   }
 
@@ -20,7 +17,7 @@ describe("ERC20", function () {
       const {token, alice, bob} = await loadFixture(deployTokenFixture);
       const aliceAddress = alice.address;
       const bobAddress = bob.address;
-      await token.mint(alice, amount);
+      await token.mint(aliceAddress, amount);
       await token.freezeAddress(aliceAddress);
       expect(await token.isFrozen(aliceAddress)).to.equal(true);
       await expect(token.connect(alice).transfer(bobAddress, amount)).to.be.reverted;
@@ -30,19 +27,18 @@ describe("ERC20", function () {
       const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
       const spenderAddress = owner.address;
       const aliceAddress = alice.address;
-      const bobAddress = bob.address;
-      await token.mint(alice, amount);
+      await token.mint(aliceAddress, amount);
       await token.connect(alice).approve(spenderAddress, amount);
       await token.freezeAddress(aliceAddress);
       expect(await token.isFrozen(aliceAddress)).to.equal(true);
-      await expect(token.connect(owner).transferFrom(aliceAddress, bobAddress, amount)).to.be.reverted;
+      await expect(token.connect(owner).transferFrom(aliceAddress, bob.address, amount)).to.be.reverted;
     });
 
     it("Freeze Alice Balance and transfer", async function () {
       const {token, alice, bob} = await loadFixture(deployTokenFixture);
       const aliceAddress = alice.address;
       const bobAddress = bob.address;
-      await token.mint(alice, amount);
+      await token.mint(aliceAddress, amount);
       await token.setFreezeBalance(aliceAddress, frozenAmount);
       expect(await token.getFrozenBalance(aliceAddress)).to.equal(frozenAmount);
       await expect(token.connect(alice).transfer(bobAddress, amount - frozenAmount)).not.to.be.reverted;

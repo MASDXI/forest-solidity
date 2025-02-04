@@ -68,7 +68,7 @@ library Forest {
     function createTx(DAG storage self, Tx memory newTx, address spender) internal {
         if (newTx.value == 0) revert TransactionZeroValue();
         bytes32 newId = calcTxHash(spender, self.nonces[spender]);
-        self.txs[newId] = newTx;
+        self.txs[newId] = Tx(newId, newTx.parent, newTx.value, newTx.level, newTx.owner);
         unchecked {
             self.nonces[spender]++;
         }

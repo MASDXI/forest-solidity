@@ -9,23 +9,11 @@ pragma solidity >=0.8.0 <0.9.0;
 abstract contract FreezeBalance {
     mapping(address => uint256) private _frozenBalance;
 
-    /**
-     * @notice Error thrown when an operation causes a balance overflow.
-     */
+    /** errors */
     error BalanceOverflow();
-
-    /**
-     * @notice Error thrown when a frozen balance restriction is violated.
-     * @param balance The total balance of the account.
-     * @param frozenBalance The frozen balance of the account.
-     */
     error BalanceFrozen(uint256 balance, uint256 frozenBalance);
 
-    /**
-     * @notice Event emitted when an account's balance is frozen or unfrozen.
-     * @param account The address of the account.
-     * @param value The amount of balance that is frozen.
-     */
+    /** events */
     event FrozenBalance(address indexed account, uint256 value);
 
     /**

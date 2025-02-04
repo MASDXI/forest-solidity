@@ -32,6 +32,30 @@ abstract contract ForestToken is ERC20, IForestERC20 {
         return _dag.getTx(tokenId);
     }
 
+    function transactionLevel(bytes32 tokenId) internal view returns (uint256) {
+        return _dag.getTxLevel(tokenId);
+    }
+
+    function transactionParent(bytes32 tokenId) internal view returns (bytes32) {
+        return _dag.getTxParent(tokenId);
+    }
+
+    function transactionRoot(bytes32 tokenId) internal view returns (bytes32) {
+        return _dag.getTxRoot(tokenId);
+    }
+
+    function transactionValue(bytes32 tokenId) internal view returns (uint256) {
+        return _dag.getTxValue(tokenId);
+    }
+
+    function transactionCount(address account) internal view returns (uint256) {
+        return _dag.getTxCount(account);
+    }
+
+    function transactionHierarchy(bytes32 tokenId) internal view returns (uint256) {
+        return _dag.getTxHierarchy(tokenId);
+    }
+
     /**
      * @dev Internal function to transfer tokens and manage transactions within the forest.
      * @param from The sender address.

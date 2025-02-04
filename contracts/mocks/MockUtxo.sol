@@ -52,7 +52,7 @@ contract MockUtxo is UTXOToken, FreezeAddress, FreezeBalance, FreezeToken {
         if (extraData == bytes32("")) {
             extraData = tokenId;
         }
-        _transfer(msg.sender, to, tokenId, value, signature, extraData);
+        _transfer(from, to, tokenId, value, signature, extraData);
 
         return true;
     }

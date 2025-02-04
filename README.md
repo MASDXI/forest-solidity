@@ -71,6 +71,11 @@ interface IForest {
 - The `hierarchy` of the transaction's `root` **MUST** be incremented if the new transaction's level exceeds the current `hierarchy`.
 - The events `TransactionSpent` **MUST** emit when spending transaction.
 
+### Additional useful function
+
+- `totalTokenAtLevel` return the total token from given `level` and root `tokenId` useful when restrict token at level and want to know total amount token that affect.
+- `totalAddressAtLevel` return the total address from given `level` and root `tokenId` useful when restrict token at level and want to know total address that affect.
+
 ## Rationale
 
 | Features                                                                  | ERC-20 | UTXO | Forest |
@@ -99,12 +104,15 @@ interface IForest {
 ### Adaptive Enforcement
 
 ### Transaction Specific Restrict
+
 Restrict transaction with specific transaction identified. 
 
 ### Transaction Level Restrict
+
 Restrict transaction with specific transaction level.
 
 ### Root Transaction Restrict
+
 Restrict transaction with specific root transaction.
 
 ### Transaction Network Diagrams
@@ -120,6 +128,11 @@ Restrict transaction with specific root transaction.
 </div>
 
 `Forest` provide reverse topological sorting natively cause each `Transaction` store the `parent` transaction, so it's can iterable `parent` back to the `root` of the DAG.
+
+### Discussion
+
+- To get rid of selecting `tokenId` it's can use the concept of First-In-First-Out (FIFO) store the transaction in `DoubleEndedQueue`.
+- `Forest` concept and be applied into application specific by built on top of `hyperledger/fabric`, `polkadotSDK`, and `cosmos`.
 
 ## Security Considerations
 

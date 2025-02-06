@@ -14,7 +14,7 @@ abstract contract FreezeAddress {
     error AddressNotFrozen();
 
     /** events */
-    event FrozeAddress(address indexed account, bool indexed auth);
+    event FrozenAddress(address indexed account, bool indexed auth);
 
     modifier checkFrozenAddress(address from, address to) {
         if (isFrozen(from) || isFrozen(to)) {
@@ -30,7 +30,7 @@ abstract contract FreezeAddress {
      */
     function _updateFreezeAddress(address account, bool auth) private {
         _frozen[account] = auth;
-        emit FrozeAddress(account, auth);
+        emit FrozenAddress(account, auth);
     }
 
     /**

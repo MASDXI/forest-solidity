@@ -7,6 +7,9 @@ pragma solidity >=0.8.0 <0.9.0;
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 library Forest {
+    /**
+     * @dev Structure representing a transaction.
+     */
     struct Tx {
         bytes32 root;
         bytes32 parent;
@@ -15,19 +18,46 @@ library Forest {
         address owner;
     }
 
+    /**
+     * @dev Structure representing a DAG.
+     */
     struct DAG {
         mapping(address => uint256) nonces;
         mapping(bytes32 => uint256) hierarchy;
         mapping(bytes32 => Tx) txs;
     }
 
+    /**
+     * @notice Event emitted when a transaction is created.
+     * @param id The identifier of the transaction.
+     * @param root The root of the transaction.
+     * @param from The spender of the transaction.
+     */
     event TransactionCreated(bytes32 indexed root, bytes32 id, address indexed from);
+    
+    /**
+     * @notice Event emitted when a transaction is spent.
+     * @param id The identifier of the transaction.
+     * @param value The value that spent from the transaction.
+     */
     event TransactionSpent(bytes32 indexed id, uint256 value);
 
+    /**
+     * @notice Error thrown when attempting to spend an not exist transaction.
+     */
     error TransactionNotExist();
+
+    /**
+     * @notice Error thrown when a transaction is unauthorized.
+     */
     error TransactionUnauthorized();
-    error TransactionInsufficient(uint256 value, uint256 spend);
+
+    /**
+     * @notice Error thrown when trying to create a transaction with zero value.
+     */
     error TransactionZeroValue();
+
+    error TransactionInsufficient(uint256 value, uint256 spend);
 
     function contains(DAG storage self, bytes32 id) private view returns (bool) {
         return self.txs[id].value != uint256(0);
@@ -65,6 +95,10 @@ library Forest {
         return self.hierarchy[id];
     }
 
+    function getTxOwner(DAG storage self, bytes32 id) internal view returns (address) {
+        return self.txs[id].owner;
+    }
+
     function createTx(DAG storage self, Tx memory newTx, address spender) internal {
         if (newTx.value == 0) revert TransactionZeroValue();
         bytes32 newId = calcTxHash(spender, self.nonces[spender]);
@@ -87,9 +121,11 @@ library Forest {
             bytes32 currentRoot = ptr.root;
             uint256 currentHierarchy = self.hierarchy[currentRoot];
             uint256 newLevel = (ptr.level + 1);
-            createTx(self, Tx(currentRoot, id, value, newLevel, to), spender);
-            if (newLevel > currentHierarchy) {
-                self.hierarchy[currentRoot] = newLevel;
+            if (to != address(0)) {
+                createTx(self, Tx(currentRoot, id, value, newLevel, to), spender);
+                if (newLevel > currentHierarchy) {
+                    self.hierarchy[currentRoot] = newLevel;
+                }
             }
         }
 

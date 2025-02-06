@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 /**
- * @title Interface for Forest ERC20 Token
- * @notice Interface for interacting with a Forest ERC20 token, providing methods for transfer and transferFrom operations.
+ * @title Interface for Forest Token
+ * @notice Interface for interacting with a Forest token, providing methods for transfer and transferFrom operations.
  */
-interface IForestERC20 {
+interface IForest {
     /**
      * @notice Error thrown when direct token transfer is not supported.
      */

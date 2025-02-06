@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.8.0 <0.9.0;
 
-import "../libraries/Forest.sol";
-import "../interfaces/IForestERC20.sol";
+import {Forest} from "../libraries/Forest.sol";
+import {IForest} from "../interfaces/IForest.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /**
@@ -11,7 +11,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * @notice This contract manages transactions in a forest-like structure using the Forest library.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
-abstract contract ForestToken is ERC20, IForestERC20 {
+abstract contract ForestToken is ERC20, IForest {
     using Forest for Forest.DAG;
 
     Forest.DAG private _dag;
@@ -85,7 +85,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
      * @param value The amount of tokens to burn.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value) internal {
-        _dag.spendTx(tokenId, account, address(0), value);
+       _dag.spendTx(tokenId, account, address(0), value);
         _burn(account, value);
     }
 
@@ -100,7 +100,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
     }
 
     /**
-     * @inheritdoc IForestERC20
+     * @inheritdoc IForest
      */
     function transfer(address to, bytes32 tokenId, uint256 value) public virtual override returns (bool) {
         _transfer(msg.sender, to, tokenId, value);
@@ -119,7 +119,7 @@ abstract contract ForestToken is ERC20, IForestERC20 {
     }
 
     /**
-     * @inheritdoc IForestERC20
+     * @inheritdoc IForest
      */
     function transferFrom(
         address from,

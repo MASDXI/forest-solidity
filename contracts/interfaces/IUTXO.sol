@@ -2,17 +2,17 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 /**
- * @title Interface for UTXO-based ERC20 Token
- * @notice This interface defines methods for handling ERC20 token transfers using the Unspent Transaction Output (UTXO) model.
+ * @title Interface for UTXO-based Token
+ * @notice This interface defines methods for handling token transfers using the Unspent Transaction Output (UTXO) model.
  */
-interface IUTXOERC20 {
+interface IUTXO {
     /**
-     * @notice Error thrown when direct ERC20 transfer is not supported.
+     * @notice Error thrown when direct transfer is not supported.
      */
     error ERC20TransferNotSupported();
 
     /**
-     * @notice Error thrown when ERC20 transfer from is not supported.
+     * @notice Error thrown when transfer from is not supported.
      */
     error ERC20TransferFromNotSupported();
 
@@ -21,7 +21,7 @@ interface IUTXOERC20 {
      * @param transactionValue The value of the transaction.
      * @param spendingValue The amount being spent.
      */
-    error UTXOERC20TransferOverTransactionValue(uint256 transactionValue, uint256 spendingValue);
+    error UTXOTransferOverTransactionValue(uint256 transactionValue, uint256 spendingValue);
 
     /**
      * @notice Transfers tokens using the UTXO model.

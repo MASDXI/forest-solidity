@@ -1,6 +1,6 @@
 ---
 Title: "Forest: A Data Structure to Unlocking Control & Traceability in Digital Currency System"
-Description: "Forest is a token-based model leveraging DAG-inspired structures to enhance traceability, security, and AML/CFT compliance"
+Description: "Forest is a token-based model leveraging DAG-inspired structures to enhance traceability and AML/CFT compliance"
 Author: "Sirawit Techavanitch <sirawit_tec@utcc.ac.th>"
 Status: "Draft"
 Purpose: "Dissertation"
@@ -12,7 +12,7 @@ Purpose: "Dissertation"
 
 ## Abstract
 
-Forest is a DAG-inspired token model designed to enhance traceability, security, and regulatory compliance in digital currency systems. By introducing hierarchical token tracking, it enables efficient enforcement on any token linked to suspicious activity with level/root. Enforcement actions, such as freezing specific tokens or partitioning all tokens with relational links, are optimized to operate at O(1) complexity.
+Forest is a DAG-inspired token model designed to enhance traceability and regulatory compliance in digital currency systems. By introducing hierarchical token tracking, it enables efficient enforcement on any token linked to suspicious activity with level/root. Enforcement actions, such as freezing specific tokens or partitioning all tokens with relational links, are optimized to operate at O(1) complexity.
 
 ## Motivation
 
@@ -90,38 +90,31 @@ interface IForest {
 - `ERC-20` provide events and keep tracking each `Transfer`,  
   but the problem is the `ERC-20` model can't separate `clean money` from `dirty money`,  
   due to the `ERC-20` not have `tokenId` to keep tracking each token when it's move.
-- `UTXO` and `eUTXO` facing challenge to combine multiple `UnspentTransaction` and spent as one,  
+- `UTXO` facing challenge to combine multiple `UnspentTransaction` and spent as one,  
   in case, user want to spend value that greater that selected `UnspentTransaction`.  
   Possible solution: prepare and batching as an array,  
-  `UTXO` and `eUTXO` maintain the amount of money or group of money in each individual transaction.  
+  `UTXO` maintain the amount of money or group of money in each individual transaction.  
   Each `UnspentTransaction` is not underlying any account,
   so to spend the transaction, the caller needs to be the owner of the transaction that needs to be spent.
-- `Forest` use to modify an existing state rather than create a new transaction, like in `UTXO` or `eUTXO` do,  
+- `Forest` use to modify an existing state rather than create a new transaction, like in `UTXO` do,  
   it allows spending the transaction multiple times till it's met `0`, The `Forest` model enables tracking of child/subtree structures,  
   providing a hierarchical view of token flows and relationships,  
   which is not possible in traditional token standards like `ERC-20`, `ERC-1400`, and `ERC-3643`.
 
 ### Adaptive Enforcement
 
-### Transaction Specific Restrict
-
-Restrict transaction with specific transaction identified. 
-
-### Transaction Level Restrict
-
-Restrict transaction with specific transaction level.
-
-### Root Transaction Restrict
-
-Restrict transaction with specific root transaction.
+- Restrict the transaction with specific transaction id.  
+- Restrict all transaction with specific transaction level.  
+  - before level `x`  
+  - after level `x`  
+  - between level `x`, `y`  
+- Restrict all transaction with specific root transaction id.  
 
 ### Transaction Network Diagrams
 
 <div align="center">
   <img src="./docs/assets/diagrams/Forest.svg" width="800"/>
 </div>
-
-`Forest` provides adaptive enforcement.
 
 <div align="center">
   <img src="./docs/assets/diagrams/Forest_Sort.svg" width="400"/>
@@ -131,8 +124,8 @@ Restrict transaction with specific root transaction.
 
 ### Discussion
 
-- To get rid of selecting `tokenId` it's can use the concept of First-In-First-Out (FIFO) store the transaction in `DoubleEndedQueue`.
-- `Forest` concept and be applied into application specific by built on top of `hyperledger/fabric`, `polkadotSDK`, and `cosmos`.
+- To get rid of selecting `tokenId` it's can use the concept of First-In-First-Out (FIFO) store the transaction in `DoubleEndedQueue`, `Heap`, and `LinkedList`.
+- `Forest` concept and be applied into application specific by built on top of `cosmos`, `hyperledger/fabric`, and `polkadot-sdk`.
 
 ## Security Considerations
 

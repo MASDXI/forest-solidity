@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  */
 abstract contract ForestToken is ERC20, IForest {
     using Forest for Forest.DAG;
-
+    
     Forest.DAG private _dag;
 
     /**

@@ -54,12 +54,11 @@ abstract contract UTXOToken is ERC20, IUTXO {
             revert UTXOTransferOverTransactionValue(txvalue, value);
         }
         _UTXO.spendTx(UTXO.TxInput(tokenId, signature), from);
-        uint256 change = txvalue - value;
-        if (change != 0) {
+        txvalue = txvalue - value;
+        if (txvalue != 0) {
             _UTXO.createTx(
                 UTXO.TxOutput(value, to),
                 tokenId,
-                UTXO.calcTxHash(from, _UTXO.getTxCount(from)),
                 from,
                 extraData
             );
@@ -77,7 +76,6 @@ abstract contract UTXOToken is ERC20, IUTXO {
         _UTXO.createTx(
             UTXO.TxOutput(value, account),
             bytes32(0),
-            UTXO.calcTxHash(address(0), _UTXO.getTxCount(address(0))),
             address(0),
             extraData
         );
@@ -95,11 +93,11 @@ abstract contract UTXOToken is ERC20, IUTXO {
         if (value == _UTXO.getTxValue(tokenId)) {
             _UTXO.consumeTx(tokenId);
         } else {
+            // @TODO handling not allow value greater than tx value.
             _UTXO.consumeTx(tokenId);
             _UTXO.createTx(
                 UTXO.TxOutput(value, account),
                 tokenId,
-                UTXO.calcTxHash(account, _UTXO.getTxCount(account)),
                 account,
                 extraData
             );

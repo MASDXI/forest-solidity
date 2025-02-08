@@ -119,25 +119,24 @@ library UnspentTransactionOutput {
      * @param self The UTXO storage.
      * @param txOutput The transaction output details.
      * @param input The input identifier of the transaction.
-     * @param id The identifier of the transaction.
      * @param creator The creator of the transaction.
      */
     function createTx(
         UTXO storage self,
         TxOutput memory txOutput,
         bytes32 input,
-        bytes32 id,
         address creator,
         bytes32 extraData
     ) internal {
         if (txOutput.value == 0) {
             revert TransactionZeroValue();
         }
-        if (_transactionExist(self, id)) {
-            revert TransactionExist();
-        }
+        uint256 nonce = self.nonces[creator];
+        bytes32 id = calcTxHash(creator, self.nonces[creator]);
         self.txs[id] = Tx(input, txOutput.value, txOutput.account, false, extraData);
-        self.nonces[creator]++;
+        unchecked {
+            self.nonces[creator] = nonce++;
+        }
 
         emit TransactionCreated(id, creator, txOutput.account);
     }
@@ -167,7 +166,7 @@ library UnspentTransactionOutput {
     }
 
     /**
-     * @notice Consumes (marks as spent) a transaction in the UTXO.
+     * @notice Consumes (marks as spent without require signature) a transaction in the UTXO.
      * @param self The UTXO storage.
      * @param id The identifier of the transaction to consume.
      */

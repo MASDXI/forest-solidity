@@ -12,7 +12,7 @@ Purpose: "Dissertation"
 
 ## Abstract
 
-Forest is a [DAG](https://www.geeksforgeeks.org/introduction-to-directed-acyclic-graph/)-inspired token model designed to enhance traceability and regulatory compliance in digital currency systems. By introducing hierarchical token tracking, it enables efficient enforcement on any token linked to suspicious activity with level/root. Enforcement actions, such as freezing specific tokens or partitioning all tokens with relational links, are optimized to operate at O(1) complexity.
+Forest is a [DAG](https://www.geeksforgeeks.org/introduction-to-directed-acyclic-graph/)-inspired token model designed to enhance traceability and regulatory compliance in digital currency systems. By introducing hierarchical token tracking, it enables efficient enforcement on any token linked to suspicious activity with level/root. Enforcement actions, such as freezing specific tokens or partitioning all tokens with relational links, are optimized to operate at $O(1)$ complexity.
 
 ## Motivation
 

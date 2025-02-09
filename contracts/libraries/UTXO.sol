@@ -95,6 +95,13 @@ library UnspentTransactionOutput {
     error TransactionZeroValue();
 
     /**
+     * @notice Error thrown when the spending value exceeds the transaction value.
+     * @param value The value of the transaction.
+     * @param spend The amount being spent.
+     */
+    error TransactionInsufficient(uint256 value, uint256 spend);
+
+    /**
      * @notice Checks if a transaction with the given id exists in the UTXO.
      * @param self The UTXO storage.
      * @param id The identifier of the transaction.
@@ -208,7 +215,6 @@ library UnspentTransactionOutput {
     function getTxInput(UTXO storage self, bytes32 id) internal view returns (bytes32) {
         return self.txs[id].input;
     }
-
 
     /**
      * @notice Retrieves the value of a transaction from the UTXO.

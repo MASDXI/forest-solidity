@@ -49,13 +49,13 @@ abstract contract UTXOToken is ERC20, IUTXO {
         bytes memory signature,
         bytes32 extraData
     ) internal virtual {
-        uint256 txvalue = _UTXO.getTxValue(tokenId);
-        if (txvalue < value) {
-            revert UTXOTransferOverTransactionValue(txvalue, value);
+        uint256 txValue = _UTXO.getTxValue(tokenId);
+        if (txValue < value) {
+            revert UTXO.TransactionInsufficient(txValue, value);
         }
         _UTXO.spendTx(UTXO.TxInput(tokenId, signature), from);
-        txvalue = txvalue - value;
-        if (txvalue != 0) {
+        txValue = txValue - value;
+        if (txValue != 0) {
             _UTXO.createTx(
                 UTXO.TxOutput(value, to),
                 tokenId,
@@ -63,6 +63,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
                 extraData
             );
         }
+        // update account-based balance
         _update(from, to, value);
     }
 
@@ -79,6 +80,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
             address(0),
             extraData
         );
+        // update account-based balance
         _mint(account, value);
     }
 
@@ -90,11 +92,13 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @param extraData The extra data for transaction output.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value, bytes32 extraData) internal {
-        if (value == _UTXO.getTxValue(tokenId)) {
-            _UTXO.consumeTx(tokenId);
-        } else {
-            // @TODO handling not allow value greater than tx value.
-            _UTXO.consumeTx(tokenId);
+        uint256 txValue = _UTXO.getTxValue(tokenId);
+        if (txValue < value) {
+            revert UTXO.TransactionInsufficient(txValue, value);
+        }
+        txValue = txValue - value;
+        _UTXO.consumeTx(tokenId);
+        if (txValue != 0) {
             _UTXO.createTx(
                 UTXO.TxOutput(value, account),
                 tokenId,
@@ -102,6 +106,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
                 extraData
             );
         }
+        // update account-based balance
         _burn(account, value);
     }
 

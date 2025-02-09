@@ -57,6 +57,11 @@ library Forest {
      */
     error TransactionZeroValue();
 
+    /**
+     * @notice Error thrown when the spending value exceeds the transaction value.
+     * @param value The value of the transaction.
+     * @param spend The amount being spent.
+     */
     error TransactionInsufficient(uint256 value, uint256 spend);
 
     function contains(DAG storage self, bytes32 id) private view returns (bool) {

@@ -6,7 +6,7 @@ const {amount, freezeAmount, transferFrom, transfer, tokenMetadata} = require(".
 describe("UTXO", function () {
   async function deployTokenFixture() {
     const [owner, alice, bob, charlie, otherAccount] = await ethers.getSigners();
-    const contract = await ethers.getContractFactory("MockUtxo");
+    const contract = await ethers.getContractFactory("MockUTXO");
     const token = await contract.deploy(tokenMetadata.name, tokenMetadata.symbol);
 
     return {token, owner, alice, bob, charlie, otherAccount};

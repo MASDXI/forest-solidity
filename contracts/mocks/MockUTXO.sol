@@ -6,7 +6,7 @@ import "../abstracts/extensions/FreezeAddress.sol";
 import "../abstracts/extensions/FreezeBalance.sol";
 import "../abstracts/extensions/FreezeToken.sol";
 
-contract MockUtxo is UTXOToken, FreezeAddress, FreezeBalance, FreezeToken {
+contract MockUTXO is UTXOToken, FreezeAddress, FreezeBalance, FreezeToken {
     constructor(string memory name_, string memory symbol_) UTXOToken(name_, symbol_) {}
 
     function transfer(

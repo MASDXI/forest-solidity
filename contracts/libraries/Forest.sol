@@ -6,6 +6,9 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice Library containing data structures and functions for managing txs within a forest-like structure.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
+// @TODO merging Tx (allowing only same root).
+
 library Forest {
     /**
      * @dev Structure representing a transaction.

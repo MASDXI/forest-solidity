@@ -12,7 +12,7 @@ Purpose: "Dissertation"
 
 ## Abstract
 
-Forest is a DAG-inspired token model designed to enhance traceability and regulatory compliance in digital currency systems. By introducing hierarchical token tracking, it enables efficient enforcement on any token linked to suspicious activity with level/root. Enforcement actions, such as freezing specific tokens or partitioning all tokens with relational links, are optimized to operate at O(1) complexity.
+Forest is a [DAG](https://www.geeksforgeeks.org/introduction-to-directed-acyclic-graph/)-inspired token model designed to enhance traceability and regulatory compliance in digital currency systems. By introducing hierarchical token tracking, it enables efficient enforcement on any token linked to suspicious activity with level/root. Enforcement actions, such as freezing specific tokens or partitioning all tokens with relational links, are optimized to operate at O(1) complexity.
 
 ## Motivation
 
@@ -71,6 +71,17 @@ interface IForest {
 - The `hierarchy` of the transaction's `root` **MUST** be incremented if the new transaction's level exceeds the current `hierarchy`.
 - The events `TransactionSpent` **MUST** emit when spending transaction.
 
+#### Merging Transaction
+
+- to merging two or multiple transactions into new one transaction all transactions **MUST** have the same transaction `root`
+- new transaction from merging will be
+
+$tx^k$: The highest transaction level from transactions that will be merging.  
+$tx^l$: The transaction level of the merged transaction.
+``` math
+tx^l = tx^k + 1
+```  
+
 ### Additional useful function
 
 - `totalTokenAtLevel` return the total token from given `level` and root `tokenId` useful when restrict token at level and want to know total amount token that affect.
@@ -99,16 +110,16 @@ interface IForest {
 - `Forest` use to modify an existing state rather than create a new transaction, like in `UTXO` do,  
   it allows spending the transaction multiple times till it's met `0`, The `Forest` model enables tracking of child/subtree structures,  
   providing a hierarchical view of token flows and relationships,  
-  which is not possible in traditional token standards like `ERC-20`, `ERC-1400`, and `ERC-3643`.
+  which is not possible in traditional token standards like [`ERC-20`](https://eips.ethereum.org/EIPS/eip-20), [`ERC-1400`](https://polymath.network/erc-1400), and [`ERC-3643`](https://eips.ethereum.org/EIPS/eip-3643).
 
-### Adaptive Enforcement
+### Granular Policy Enforcement
 
-- Restrict the transaction with specific transaction id.  
-- Restrict all transaction with specific transaction level.  
-  - before level `x`  
-  - after level `x`  
-  - between level `x`, `y`  
-- Restrict all transaction with specific root transaction id.  
+- Restrict the transaction with specific `TxId`.  
+- Restrict all transaction with specific `TxLevel`.  
+  - before `TxLevel` `x`
+  - after `TxLevel` `x` 
+  - between `TxLevel` `x` and `y`
+- Restrict all transaction with specific root `TxId`.  
 
 ### Transaction Network Diagrams
 
@@ -125,7 +136,7 @@ interface IForest {
 ### Discussion
 
 - To get rid of selecting `tokenId` it's can use the concept of First-In-First-Out (FIFO) store the transaction in `DoubleEndedQueue`, `Heap`, and `LinkedList`.
-- `Forest` concept and be applied into application specific by built on top of `cosmos`, `hyperledger/fabric`, and `polkadot-sdk`.
+- `Forest` concept and be applied into application specific by built on top of [`cosmos-sdk`](https://github.com/cosmos/cosmos-sdk), [`hyperledger/fabric`](https://github.com/hyperledger/fabric), and [`polkadot-sdk`](https://github.com/paritytech/polkadot-sdk).
 
 ## Security Considerations
 
@@ -141,13 +152,17 @@ Exceeds block gas limit if the blockchain has a block gas limit lower than the g
 
 The `Forest` model tracks all assets within the system, which can be represented mathematically as
 
+$A^d:$ The decimals of the asset.  
+$A^t:$ The total supply of the asset.  
+$A^s:$ The possible asset represent in transaction.  
+
 ```math
-assets = totalSupply \times decimals
+A^s = A^t \times A^d
 ```
 
 While this ensures precision, the high granularity can increase storage needs.
 Traditional finance often uses simpler `decimals` like `2`, `4` or `6`, avoiding excessive detail.
-Adopting similar strategies could help balance granularity with efficiency.
+Adopting similar strategies could help balance granularity with efficiency. Or limit value as `MINIMUM` spending.
 
 ### High Complexity
 

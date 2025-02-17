@@ -4,12 +4,15 @@ pragma solidity >=0.8.0 <0.9.0;
 /**
  * @title Unspent Transaction Output Model (UTXO)
  * @notice This library implements the UTXO model for managing transactions on the blockchain.
+ * inspired from:
+ * https://gist.github.com/alex-miller-0/a5f4de3f811872b7272e66a3697f88de
+ * https://github.com/ProjectWyvern/wyvern-ethereum/blob/master/contracts/token/UTXORedeemableToken.sol
+ * https://github.com/olegfomenko/utxo
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-
-// @TODO merging UTXO.
 
 library UnspentTransactionOutput {
     using ECDSA for bytes32;
@@ -186,6 +189,15 @@ library UnspentTransactionOutput {
         self.txs[id].spent = true;
 
         emit TransactionConsumed(id);
+    }
+
+    /**
+     * @notice merge multiple transaction into single transaction.
+     * @param self The UTXO storage.
+     * @param ids The array of the identifiers of the transaction to merge.
+     */
+    function mergeTx(UTXO storage self, bytes32 [] memory ids) internal {
+        // @TODO
     }
 
     /**

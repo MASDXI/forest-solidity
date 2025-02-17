@@ -7,8 +7,6 @@ pragma solidity >=0.8.0 <0.9.0;
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 
-// @TODO merging Tx (allowing only same root).
-
 library Forest {
     /**
      * @dev Structure representing a transaction.
@@ -138,5 +136,12 @@ library Forest {
         }
 
         emit TransactionSpent(id, value);
+    }
+
+    /**
+     * @notice not suitable for use in production.
+     */
+    function mergeTx(DAG storage self, bytes32 [] memory ids) internal {
+        // @TODO
     }
 }

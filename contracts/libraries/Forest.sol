@@ -35,7 +35,7 @@ library Forest {
      * @param from The spender of the transaction.
      */
     event TransactionCreated(bytes32 indexed root, bytes32 id, address indexed from);
-    
+
     /**
      * @notice Event emitted when a transaction is spent.
      * @param id The identifier of the transaction.
@@ -57,6 +57,11 @@ library Forest {
      * @notice Error thrown when trying to create a transaction with zero value.
      */
     error TransactionZeroValue();
+
+    /**
+     * @notice Error thrown when trying to merge over 255 transactions.
+     */
+    error TransactionMergeSizeExceed();
 
     /**
      * @notice Error thrown when the spending value exceeds the transaction value.
@@ -141,7 +146,27 @@ library Forest {
     /**
      * @notice not suitable for use in production.
      */
-    function mergeTx(DAG storage self, bytes32 [] memory ids) internal {
-        // @TODO
+    function mergeTx(DAG storage self, bytes32[] memory ids) internal {
+        uint256 length = ids.length;
+        if (length >= type(uint8).max) revert TransactionMergeSizeExceed();
+        Tx memory ptr = getTx(self, ids[0]);
+        if (msg.sender != ptr.owner) revert TransactionUnauthorized();
+        Tx memory txn;
+        unchecked {
+            for (uint8 index = 1; index < ids.length; index++) {
+                txn = getTx(self, ids[index]);
+                if (ptr.root == txn.root && ptr.owner == txn.owner) {
+                    self.txs[ids[index]].value = 0;
+                    ptr.value += txn.value;
+                    if (ptr.level < txn.level) {
+                        ptr.level = txn.level;
+                    }
+                }
+            }
+            createTx(self, ptr, ptr.owner);
+            if (ptr.level > self.hierarchy[ids[0]]) {
+                self.hierarchy[ids[0]] = ptr.level;
+            }
+        }
     }
 }

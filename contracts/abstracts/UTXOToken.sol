@@ -28,7 +28,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @param tokenId The identifier of the token transaction.
      * @return A `Transaction` structure containing transaction details.
      */
-    function _transaction(bytes32 tokenId) internal view returns (UTXO.Tx memory) {
+    function _transaction(bytes32 tokenId) internal view returns (UTXO.Txn memory) {
         return _UTXO.transaction(tokenId);
     }
 
@@ -49,15 +49,15 @@ abstract contract UTXOToken is ERC20, IUTXO {
         bytes memory signature,
         bytes32 extraData
     ) internal virtual {
-        uint256 txValue = _UTXO.getTxValue(tokenId);
-        if (txValue < value) {
-            revert UTXO.TransactionInsufficient(txValue, value);
+        uint256 txnValue = _UTXO.getTxnValue(tokenId);
+        if (txnValue < value) {
+            revert UTXO.TransactionInsufficient(txnValue, value);
         }
-        _UTXO.spendTx(UTXO.TxInput(tokenId, signature), from);
-        txValue = txValue - value;
-        if (txValue != 0) {
-            _UTXO.createTx(
-                UTXO.TxOutput(value, to),
+        _UTXO.spendTxn(UTXO.TxnInput(tokenId, signature), from);
+        txnValue = txnValue - value;
+        if (txnValue != 0) {
+            _UTXO.createTxn(
+                UTXO.TxnOutput(value, to),
                 tokenId,
                 from,
                 extraData
@@ -74,8 +74,8 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @param extraData The extra data for transaction output.
      */
     function _mintTransaction(address account, uint256 value, bytes32 extraData) internal {
-        _UTXO.createTx(
-            UTXO.TxOutput(value, account),
+        _UTXO.createTxn(
+            UTXO.TxnOutput(value, account),
             bytes32(0),
             address(0),
             extraData
@@ -92,15 +92,15 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @param extraData The extra data for transaction output.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value, bytes32 extraData) internal {
-        uint256 txValue = _UTXO.getTxValue(tokenId);
-        if (txValue < value) {
-            revert UTXO.TransactionInsufficient(txValue, value);
+        uint256 txnValue = _UTXO.getTxnValue(tokenId);
+        if (txnValue < value) {
+            revert UTXO.TransactionInsufficient(txnValue, value);
         }
-        txValue = txValue - value;
-        _UTXO.consumeTx(tokenId);
-        if (txValue != 0) {
-            _UTXO.createTx(
-                UTXO.TxOutput(value, account),
+        txnValue = txnValue - value;
+        _UTXO.consumeTxn(tokenId);
+        if (txnValue != 0) {
+            _UTXO.createTxn(
+                UTXO.TxnOutput(value, account),
                 tokenId,
                 account,
                 extraData
@@ -115,7 +115,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @param tokenId The identifier of the token transaction.
      * @return A `Transaction` structure containing transaction details.
      */
-    function transaction(bytes32 tokenId) public view returns (UTXO.Tx memory) {
+    function transaction(bytes32 tokenId) public view returns (UTXO.Txn memory) {
         return _transaction(tokenId);
     }
 
@@ -125,7 +125,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @return The value of the UTXO associated with the specified token ID.
      */
     function transactionValue(bytes32 tokenId) public view returns (uint256) {
-        return _UTXO.getTxValue(tokenId);
+        return _UTXO.getTxnValue(tokenId);
     }
 
     /**
@@ -134,7 +134,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @return The input associated with the specified UTXO token ID.
      */
     function transactionInput(bytes32 tokenId) public view returns (bytes32) {
-        return _UTXO.getTxInput(tokenId);
+        return _UTXO.getTxnInput(tokenId);
     }
 
     /**
@@ -143,7 +143,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @return The address of the owner of the UTXO associated with the specified token ID.
      */
     function transactionOwner(bytes32 tokenId) public view returns (address) {
-        return _UTXO.getTxOwner(tokenId);
+        return _UTXO.getTxnOwner(tokenId);
     }
 
     /**
@@ -152,7 +152,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @return The extra data of the UTXO associated with the specified token ID.
      */
     function transactionExtraData(bytes32 tokenId) public view returns (bytes32) {
-        return _UTXO.getTxExtraData(tokenId);
+        return _UTXO.getTxnExtraData(tokenId);
     }
 
     /**
@@ -161,7 +161,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @return True if the UTXO associated with the specified token ID has been spent, false otherwise.
      */
     function transactionSpent(bytes32 tokenId) public view returns (bool) {
-        return _UTXO.getTxSpent(tokenId);
+        return _UTXO.getTxnSpent(tokenId);
     }
 
     /**

@@ -3,7 +3,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 /**
  * @title Forest Model Library
- * @notice Library containing data structures and functions for managing txs within a forest-like structure.
+ * @notice Library containing data structures and functions for managing txns within a forest-like structure.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 
@@ -11,7 +11,7 @@ library Forest {
     /**
      * @dev Structure representing a transaction.
      */
-    struct Tx {
+    struct Txn {
         bytes32 root;
         bytes32 parent;
         uint256 value;
@@ -25,7 +25,7 @@ library Forest {
     struct DAG {
         mapping(address => uint256) nonces;
         mapping(bytes32 => uint256) hierarchy;
-        mapping(bytes32 => Tx) txs;
+        mapping(bytes32 => Txn) txns;
     }
 
     /**
@@ -71,58 +71,58 @@ library Forest {
     error TransactionInsufficient(uint256 value, uint256 spend);
 
     function contains(DAG storage self, bytes32 id) private view returns (bool) {
-        return self.txs[id].value != uint256(0);
+        return self.txns[id].value != uint256(0);
     }
 
-    function calcTxHash(address account, uint256 nonce) internal view returns (bytes32) {
+    function calcTxnHash(address account, uint256 nonce) internal view returns (bytes32) {
         return keccak256(abi.encode(block.chainid, account, nonce));
     }
 
-    function getTx(DAG storage self, bytes32 id) internal view returns (Tx memory) {
-        return self.txs[id];
+    function getTxn(DAG storage self, bytes32 id) internal view returns (Txn memory) {
+        return self.txns[id];
     }
 
-    function getTxLevel(DAG storage self, bytes32 id) internal view returns (uint256) {
-        return self.txs[id].level;
+    function getTxnLevel(DAG storage self, bytes32 id) internal view returns (uint256) {
+        return self.txns[id].level;
     }
 
-    function getTxParent(DAG storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].parent;
+    function getTxnParent(DAG storage self, bytes32 id) internal view returns (bytes32) {
+        return self.txns[id].parent;
     }
 
-    function getTxRoot(DAG storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].root;
+    function getTxnRoot(DAG storage self, bytes32 id) internal view returns (bytes32) {
+        return self.txns[id].root;
     }
 
-    function getTxValue(DAG storage self, bytes32 id) internal view returns (uint256) {
-        return self.txs[id].value;
+    function getTxnValue(DAG storage self, bytes32 id) internal view returns (uint256) {
+        return self.txns[id].value;
     }
 
-    function getTxCount(DAG storage self, address account) internal view returns (uint256) {
+    function getTxnCount(DAG storage self, address account) internal view returns (uint256) {
         return self.nonces[account];
     }
 
-    function getTxHierarchy(DAG storage self, bytes32 id) internal view returns (uint256) {
+    function getTxnHierarchy(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.hierarchy[id];
     }
 
-    function getTxOwner(DAG storage self, bytes32 id) internal view returns (address) {
-        return self.txs[id].owner;
+    function getTxnOwner(DAG storage self, bytes32 id) internal view returns (address) {
+        return self.txns[id].owner;
     }
 
-    function createTx(DAG storage self, Tx memory newTx, address spender) internal {
-        if (newTx.value == 0) revert TransactionZeroValue();
-        bytes32 newId = calcTxHash(spender, self.nonces[spender]);
-        self.txs[newId] = Tx(newId, newTx.parent, newTx.value, newTx.level, newTx.owner);
+    function createTxn(DAG storage self, Txn memory newTxn, address spender) internal {
+        if (newTxn.value == 0) revert TransactionZeroValue();
+        bytes32 newId = calcTxnHash(spender, self.nonces[spender]);
+        self.txns[newId] = Txn(newId, newTxn.parent, newTxn.value, newTxn.level, newTxn.owner);
         unchecked {
             self.nonces[spender]++;
         }
 
-        emit TransactionCreated(newId, newTx.root, spender);
+        emit TransactionCreated(newId, newTxn.root, spender);
     }
 
-    function spendTx(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
-        Tx storage ptr = self.txs[id];
+    function spendTxn(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
+        Txn storage ptr = self.txns[id];
         if (msg.sender != ptr.owner) revert TransactionUnauthorized();
         uint256 currentValue = ptr.value;
         if (currentValue == 0) revert TransactionNotExist();
@@ -133,7 +133,7 @@ library Forest {
             uint256 currentHierarchy = self.hierarchy[currentRoot];
             uint256 newLevel = (ptr.level + 1);
             if (to != address(0)) {
-                createTx(self, Tx(currentRoot, id, value, newLevel, to), spender);
+                createTxn(self, Txn(currentRoot, id, value, newLevel, to), spender);
                 if (newLevel > currentHierarchy) {
                     self.hierarchy[currentRoot] = newLevel;
                 }
@@ -146,24 +146,24 @@ library Forest {
     /**
      * @notice not suitable for use in production.
      */
-    function mergeTx(DAG storage self, bytes32[] memory ids) internal {
-        uint256 length = ids.length;
-        if (length >= type(uint8).max) revert TransactionMergeSizeExceed();
-        Tx memory ptr = getTx(self, ids[0]);
+    function mergeTxn(DAG storage self, bytes32[] memory ids) internal {
+        uint256 txnsLength = ids.length;
+        if (txnsLength >= 255) revert TransactionMergeSizeExceed();
+        Txn memory ptr = getTxn(self, ids[0]);
         if (msg.sender != ptr.owner) revert TransactionUnauthorized();
-        Tx memory txn;
+        Txn memory txn;
         unchecked {
-            for (uint8 index = 1; index < ids.length; index++) {
-                txn = getTx(self, ids[index]);
+            for (uint8 index = 1; index < txnsLength; index++) {
+                txn = getTxn(self, ids[index]);
                 if (ptr.root == txn.root && ptr.owner == txn.owner) {
-                    self.txs[ids[index]].value = 0;
+                    self.txns[ids[index]].value = 0;
                     ptr.value += txn.value;
                     if (ptr.level < txn.level) {
                         ptr.level = txn.level;
                     }
                 }
             }
-            createTx(self, ptr, ptr.owner);
+            createTxn(self, ptr, ptr.owner);
             if (ptr.level > self.hierarchy[ids[0]]) {
                 self.hierarchy[ids[0]] = ptr.level;
             }

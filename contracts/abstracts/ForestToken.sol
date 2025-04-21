@@ -28,32 +28,32 @@ abstract contract ForestToken is ERC20, IForest {
      * @param tokenId The identifier of the transaction.
      * @return The transaction details.
      */
-    function _transaction(bytes32 tokenId) internal view returns (Forest.Tx memory) {
-        return _dag.getTx(tokenId);
+    function _transaction(bytes32 tokenId) internal view returns (Forest.Txn memory) {
+        return _dag.getTxn(tokenId);
     }
 
     function transactionLevel(bytes32 tokenId) internal view returns (uint256) {
-        return _dag.getTxLevel(tokenId);
+        return _dag.getTxnLevel(tokenId);
     }
 
     function transactionParent(bytes32 tokenId) internal view returns (bytes32) {
-        return _dag.getTxParent(tokenId);
+        return _dag.getTxnParent(tokenId);
     }
 
     function transactionRoot(bytes32 tokenId) internal view returns (bytes32) {
-        return _dag.getTxRoot(tokenId);
+        return _dag.getTxnRoot(tokenId);
     }
 
     function transactionValue(bytes32 tokenId) internal view returns (uint256) {
-        return _dag.getTxValue(tokenId);
+        return _dag.getTxnValue(tokenId);
     }
 
     function transactionCount(address account) internal view returns (uint256) {
-        return _dag.getTxCount(account);
+        return _dag.getTxnCount(account);
     }
 
     function transactionHierarchy(bytes32 tokenId) internal view returns (uint256) {
-        return _dag.getTxHierarchy(tokenId);
+        return _dag.getTxnHierarchy(tokenId);
     }
 
     /**
@@ -64,7 +64,7 @@ abstract contract ForestToken is ERC20, IForest {
      * @param value The amount of tokens to transfer.
      */
     function _transfer(address from, address to, bytes32 tokenId, uint256 value) internal virtual {
-        _dag.spendTx(tokenId, from, to, value);
+        _dag.spendTxn(tokenId, from, to, value);
         _update(from, to, value);
     }
 
@@ -74,7 +74,7 @@ abstract contract ForestToken is ERC20, IForest {
      * @param value The amount of tokens to mint.
      */
     function _mintTransaction(address account, uint256 value) internal {
-        _dag.createTx(Forest.Tx(bytes32(0), bytes32(0), value, 0, account), address(0));
+        _dag.createTxn(Forest.Txn(bytes32(0), bytes32(0), value, 0, account), address(0));
         _mint(account, value);
     }
 
@@ -85,7 +85,7 @@ abstract contract ForestToken is ERC20, IForest {
      * @param value The amount of tokens to burn.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value) internal {
-       _dag.spendTx(tokenId, account, address(0), value);
+       _dag.spendTxn(tokenId, account, address(0), value);
         _burn(account, value);
     }
 

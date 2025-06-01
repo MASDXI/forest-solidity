@@ -56,12 +56,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
         _UTXO.spendTxn(UTXO.TxnInput(tokenId, signature), from);
         txnValue = txnValue - value;
         if (txnValue != 0) {
-            _UTXO.createTxn(
-                UTXO.TxnOutput(value, to),
-                tokenId,
-                from,
-                extraData
-            );
+            _UTXO.createTxn(UTXO.TxnOutput(value, to), tokenId, from, extraData);
         }
         // update account-based balance
         _update(from, to, value);
@@ -74,12 +69,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
      * @param extraData The extra data for transaction output.
      */
     function _mintTransaction(address account, uint256 value, bytes32 extraData) internal {
-        _UTXO.createTxn(
-            UTXO.TxnOutput(value, account),
-            bytes32(0),
-            address(0),
-            extraData
-        );
+        _UTXO.createTxn(UTXO.TxnOutput(value, account), bytes32(0), address(0), extraData);
         // update account-based balance
         _mint(account, value);
     }
@@ -99,12 +89,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
         txnValue = txnValue - value;
         _UTXO.consumeTxn(tokenId);
         if (txnValue != 0) {
-            _UTXO.createTxn(
-                UTXO.TxnOutput(value, account),
-                tokenId,
-                account,
-                extraData
-            );
+            _UTXO.createTxn(UTXO.TxnOutput(value, account), tokenId, account, extraData);
         }
         // update account-based balance
         _burn(account, value);

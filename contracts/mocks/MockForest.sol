@@ -7,7 +7,13 @@ import "../abstracts/extensions/FreezeBalance.sol";
 import "../abstracts/extensions/FreezeToken.sol";
 
 contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
-    enum RESTRICT_TYPES { NULL, EQUAL, LESS, GREATER, BETWEEN }
+    enum RESTRICT_TYPES {
+        NULL,
+        EQUAL,
+        LESS,
+        GREATER,
+        BETWEEN
+    }
 
     struct Restrict {
         RESTRICT_TYPES types;
@@ -50,7 +56,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         }
         _;
     }
-    
+
     modifier checkFrozenAfterLevel(bytes32 tokenId) {
         Restrict memory restrict = getPartition(tokenId);
         uint256 txnLevel = transactionLevel(tokenId);
@@ -61,7 +67,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         }
         _;
     }
-    
+
     /** @dev restrict in partitioning style */
     modifier checkFrozenInBetweenLevel(bytes32 tokenId) {
         // check root equal check greater than 'x' and less than 'y'
@@ -74,8 +80,8 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         }
         _;
     }
-    
-    /** @notice ERC20 Transfer also emit. */ 
+
+    /** @notice ERC20 Transfer also emit. */
     function _transfer(
         address from,
         address to,
@@ -90,7 +96,6 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         checkFrozenRootOrParent(tokenId)
         checkFrozenToken(tokenId)
     {
-        
         super._transfer(from, to, tokenId, value);
         Forest.Txn memory txn = _transaction(tokenId);
         emit Transfer(from, to, txn.root, txn.parent, value);

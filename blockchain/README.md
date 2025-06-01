@@ -9,7 +9,7 @@
 
 - Meantime to response. After the alert system triggers, how much time to freeze the fund that is relative to the fraudulent.
 - Meantime to resolve. After the alert system triggers, how much time to freeze the fund that is relative to the fraudulent and funds are retrieved.
-  
+
 <!-- Response Time, Recovery Time and Post-Incident Analysis -->
 
 ## Prerequisite
@@ -21,13 +21,13 @@
 
 Start local network with command.
 
-``` shell
+```shell
 yarn besu:start
 ```
 
 Stop local network with command.
 
-``` shell
+```shell
 yarn besu:stop
 ```
 
@@ -58,6 +58,6 @@ with `x`
 
 ## Reading result
 
-``` shell
+```shell
 # command
 ```

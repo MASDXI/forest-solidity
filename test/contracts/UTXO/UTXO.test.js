@@ -27,7 +27,7 @@ describe("UTXO", function () {
       expect(await token.balanceOf(aliceAddress)).to.equal(0);
       expect(await token.balanceOf(bobAddress)).to.equal(amount);
     });
-      
+
     it("transferFrom Alice to Bob", async function () {
       const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
       const spenderAddress = owner.address;

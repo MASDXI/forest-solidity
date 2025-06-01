@@ -78,9 +78,10 @@ interface IForest {
 
 $tx^k$: The highest transaction level from transactions that will be merging.  
 $tx^l$: The transaction level of the merged transaction.
-``` math
+
+```math
 tx^l = tx^k + 1
-```  
+```
 
 ### Additional useful function
 
@@ -114,12 +115,12 @@ tx^l = tx^k + 1
 
 ### Granular Policy Enforcement
 
-- Restrict the transaction with specific `TxId`.  
-- Restrict all transaction with specific `TxLevel`.  
+- Restrict the transaction with specific `TxId`.
+- Restrict all transaction with specific `TxLevel`.
   - before `TxLevel` `x`
-  - after `TxLevel` `x` 
+  - after `TxLevel` `x`
   - between `TxLevel` `x` and `y`
-- Restrict all transaction with specific root `TxId`.  
+- Restrict all transaction with specific root `TxId`.
 
 ### Transaction Network Diagrams
 
@@ -154,7 +155,7 @@ The `Forest` model tracks all assets within the system, which can be represented
 
 $A^d:$ The decimals of the asset.  
 $A^t:$ The total supply of the asset.  
-$A^s:$ The possible asset represent in transaction.  
+$A^s:$ The possible asset represent in transaction.
 
 ```math
 A^s = A^t \times A^d

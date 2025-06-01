@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  */
 abstract contract ForestToken is ERC20, IForest {
     using Forest for Forest.DAG;
-    
+
     Forest.DAG private _dag;
 
     /**
@@ -85,7 +85,7 @@ abstract contract ForestToken is ERC20, IForest {
      * @param value The amount of tokens to burn.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value) internal {
-       _dag.spendTxn(tokenId, account, address(0), value);
+        _dag.spendTxn(tokenId, account, address(0), value);
         _burn(account, value);
     }
 

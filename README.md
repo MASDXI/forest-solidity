@@ -2,7 +2,7 @@
 
 An implementation of forest in solidity.
 
-``` shell
+```shell
 npm install @MASDXI/forest-solidity
 ```
 

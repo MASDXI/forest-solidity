@@ -196,7 +196,7 @@ library UnspentTransactionOutput {
      * @param self The UTXO storage.
      * @param ids The array of the identifiers of the transaction to merge.
      */
-    function mergeTxn(UTXO storage self, bytes32 [] memory ids) internal {
+    function mergeTxn(UTXO storage self, bytes32[] memory ids) internal {
         // @TODO
     }
 

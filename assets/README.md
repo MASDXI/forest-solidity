@@ -7,7 +7,7 @@ Purpose: "Dissertation"
 ---
 
 <h1 align="center">
-<img src="./docs/assets/banner.png" width="450"/>
+<img src="./banner.png" width="450"/>
 </h1>
 
 ## Abstract
@@ -48,6 +48,8 @@ interface IForest {
     function rootOfToken(bytes32 tokenId) external view returns (bytes32);
     function tokenExists(bytes32 tokenId) external view returns (bool);
     function valueOfToken(bytes32 tokenId) external view returns (uint256);
+
+    // extended ERC20
     function transfer(address to, bytes32 tokenId, uint256 value) external returns (bool);
     function transferFrom(address from, address to, bytes32 tokenId, uint256 value) external returns (bool);
 }
@@ -57,7 +59,7 @@ interface IForest {
 
 #### Create Transaction
 
-- The `value` of the transaction **MUST NOT** be zero. If `value` is 0, the function **MUST** revert.
+- The `value` of the transaction **MUST NOT** be zero. If `value` is zero, the function **MUST** revert.
 - The transaction **MUST** be assigned a unique `id`. The `id` **SHOULD** be derived using the deterministic hashing function.
 - The new transaction **MUST** include the correct parent field:
   If the transaction is derived (e.g., created by spender), the `parent` field **MUST** reference the `id` of the original transaction.
@@ -125,11 +127,11 @@ tx^l = tx^k + 1
 ### Transaction Network Diagrams
 
 <div align="center">
-  <img src="./docs/assets/diagrams/Forest.svg" width="800"/>
+  <img src="./diagrams/Forest.svg" width="800"/>
 </div>
 
 <div align="center">
-  <img src="./docs/assets/diagrams/Forest_Sort.svg" width="400"/>
+  <img src="./diagrams/Forest_Sort.svg" width="400"/>
 </div>
 
 `Forest` provide reverse topological sorting natively cause each `Transaction` store the `parent` transaction, so it's can iterable `parent` back to the `root` of the DAG.

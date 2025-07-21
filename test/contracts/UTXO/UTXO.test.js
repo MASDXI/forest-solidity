@@ -46,19 +46,43 @@ describe("UTXO", function () {
     });
 
     it("Freeze Alice Account and transferFrom", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      // TODO Freeze the account
     });
 
     it("Freeze Alice Balance and transfer", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      // TODO Freeze the balance
     });
 
     it("Freeze Alice Balance and transferFrom", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      // TODO Freeze the balance
     });
 
     it("Freeze Alice Token and transfer", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      //  TODO Freeze the transaction
     });
   });
 

@@ -13,59 +13,58 @@ abstract contract FreezeAddress {
     mapping(address => bool) private _frozen;
 
     /** @custom:errors */
-    error AddressFrozen();
-    error AddressNotFrozen();
+    error SenderAddressFrozen(address sender);
+    error ReceiverAddressFrozen(address receiver);
+    // error UserAddressNotFrozen(address account);
 
     /** @custom:events */
-    event FrozenAddress(address indexed account, bool indexed auth);
+    
+    /**
+     * @dev See {IERC3643.AddressFrozen}
+     * @custom:reference {https://github.com/ERC-3643/ERC-3643/blob/main/contracts/token/IToken.sol}.
+     */
+    event AddressFrozen(address indexed userAddress, bool indexed isFrozen, address indexed owner);
 
     /** @custom:modifier */
     modifier checkFrozenAddress(address from, address to) {
-        if (isFrozen(from) || isFrozen(to)) {
-            revert AddressFrozen();
+        if (isFrozen(from)) {
+            revert SenderAddressFrozen(from);
+        }
+        if (isFrozen(from)) {
+            revert ReceiverAddressFrozen(to);
         }
         _;
     }
 
-    /** @custom:function-private */
+    /** @custom:function-internal */
     /**
      * @notice Internal function to update the frozen status of an address.
      * @param account The address to update.
      * @param auth The new frozen status. True to freeze the address, false to unfreeze.
      */
-    function _updateFreezeAddress(address account, bool auth) private {
+    function _updateFreezeAddress(address account, bool auth, address initiator) internal {
         _frozen[account] = auth;
-        emit FrozenAddress(account, auth);
+
+        emit AddressFrozen(account, auth, initiator);
+    }
+    
+    /** 
+     * @dev See {IERC3643.setAddressFrozen}
+     * @custom:reference 
+     * {https://eips.ethereum.org/EIPS/eip-3643}.
+     * {https://docs.erc3643.org/erc-3643/smart-contracts-library/permissioned-tokens/tokens-interface}.
+     */
+    function setAddressFrozen(address userAddress, bool freeze) public virtual {
+        _updateFreezeAddress(userAddress, freeze, msg.sender);
     }
 
-    /**
-     * @notice Freezes the specified address.
-     * @param account The address to freeze.
+    /** 
+     * @dev See {IERC3643.isFrozen}
+     * @custom:reference
+     * {https://eips.ethereum.org/EIPS/eip-3643}.
+     * {https://docs.erc3643.org/erc-3643/smart-contracts-library/permissioned-tokens/tokens-interface}.
      */
-    function freezeAddress(address account) public {
-        if (_frozen[account]) {
-            revert AddressFrozen();
-        }
-        _updateFreezeAddress(account, true);
-    }
-
-    /**
-     * @notice Unfreezes the specified address.
-     * @param account The address to unfreeze.
-     */
-    function unfreezeAddress(address account) public {
-        if (!_frozen[account]) {
-            revert AddressNotFrozen();
-        }
-        _updateFreezeAddress(account, false);
-    }
-
-    /**
-     * @notice Checks if the specified address is frozen.
-     * @param account The address to check.
-     * @return A boolean indicating if the address is frozen (true) or not (false).
-     */
-    function isFrozen(address account) public view returns (bool) {
-        return _frozen[account];
+    function isFrozen(address userAddress) public view returns (bool) {
+        return _frozen[userAddress];
     }
 }

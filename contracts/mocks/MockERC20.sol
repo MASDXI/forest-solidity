@@ -3,9 +3,9 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "../policies/FreezeAddress.sol";
-import "../policies/FreezeBalance.sol";
+import "../policies/FreezePartialTokens.sol";
 
-contract MockERC20 is ERC20, FreezeAddress, FreezeBalance {
+contract MockERC20 is ERC20, FreezeAddress, FreezePartialTokens {
     constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) {}
 
     function transfer(

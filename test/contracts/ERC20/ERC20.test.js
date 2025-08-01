@@ -18,7 +18,7 @@ describe("ERC20", function () {
       const aliceAddress = alice.address;
       const bobAddress = bob.address;
       await token.mint(aliceAddress, amount);
-      await token.freezeAddress(aliceAddress);
+      await token.setAddressFrozen(aliceAddress, true);
       expect(await token.isFrozen(aliceAddress)).to.equal(true);
       await expect(token.connect(alice).transfer(bobAddress, amount)).to.be.reverted;
     });
@@ -29,7 +29,7 @@ describe("ERC20", function () {
       const aliceAddress = alice.address;
       await token.mint(aliceAddress, amount);
       await token.connect(alice).approve(spenderAddress, amount);
-      await token.freezeAddress(aliceAddress);
+      await token.setAddressFrozen(aliceAddress, true);
       expect(await token.isFrozen(aliceAddress)).to.equal(true);
       await expect(token.connect(owner).transferFrom(aliceAddress, bob.address, amount)).to.be.reverted;
     });

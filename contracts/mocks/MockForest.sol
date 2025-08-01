@@ -3,10 +3,10 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import "../abstracts/ForestToken.sol";
 import "../policies/FreezeAddress.sol";
-import "../policies/FreezeBalance.sol";
+import "../policies/FreezePartialTokens.sol";
 import "../policies/FreezeToken.sol";
 
-contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
+contract MockForest is ForestToken, FreezeAddress, FreezePartialTokens, FreezeToken {
     enum RESTRICT_TYPES {
         NULL,
         EQUAL,
@@ -40,7 +40,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     modifier checkFrozenLevel(bytes32 tokenId) {
         Restrict memory restrict = getPartition(tokenId);
         if (restrict.types == RESTRICT_TYPES.EQUAL && (restrict.enable)) {
-            if (transactionLevel(tokenId) == restrict.start) {
+            if (_transaction(tokenId).level == restrict.start) {
                 revert TokenFrozen();
             }
         }
@@ -50,7 +50,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     modifier checkFrozenBeforeLevel(bytes32 tokenId) {
         Restrict memory restrict = getPartition(tokenId);
         if (restrict.types == RESTRICT_TYPES.LESS && (restrict.enable)) {
-            if (transactionLevel(tokenId) < restrict.start) {
+            if (_transaction(tokenId).level < restrict.start) {
                 revert TokenFrozen();
             }
         }
@@ -59,9 +59,9 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
 
     modifier checkFrozenAfterLevel(bytes32 tokenId) {
         Restrict memory restrict = getPartition(tokenId);
-        uint256 txnLevel = transactionLevel(tokenId);
+        uint256 txnLevel = _transaction(tokenId).level;
         if (restrict.types == RESTRICT_TYPES.GREATER && (restrict.enable)) {
-            if (transactionLevel(tokenId) > restrict.start && txnLevel < restrict.end) {
+            if (txnLevel > restrict.start) {
                 revert TokenFrozen();
             }
         }
@@ -72,7 +72,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     modifier checkFrozenInBetweenLevel(bytes32 tokenId) {
         // check root equal check greater than 'x' and less than 'y'
         Restrict memory restrict = getPartition(tokenId);
-        uint256 txnLevel = transactionLevel(tokenId);
+        uint256 txnLevel = _transaction(tokenId).level;
         if (restrict.types == RESTRICT_TYPES.BETWEEN && (restrict.enable)) {
             if (txnLevel > restrict.start && txnLevel < restrict.end) {
                 revert TokenFrozen();
@@ -110,7 +110,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     }
 
     function setPartition(bytes32 tokenId, uint256 start, uint256 end, RESTRICT_TYPES restrict) public {
-        bytes32 rootTokenId = transactionRoot(tokenId);
+        bytes32 rootTokenId = _transaction(tokenId).root;
         _restricts[rootTokenId].types = restrict;
         _restricts[rootTokenId].enable = true;
         _restricts[rootTokenId].start = start;
@@ -118,10 +118,10 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     }
 
     function clearPartition(bytes32 tokenId) public {
-        delete _restricts[transactionRoot(tokenId)];
+        delete _restricts[_transaction(tokenId).root];
     }
 
     function getPartition(bytes32 tokenId) public view returns (Restrict memory) {
-        return _restricts[transactionRoot(tokenId)];
+        return _restricts[_transaction(tokenId).root];
     }
 }

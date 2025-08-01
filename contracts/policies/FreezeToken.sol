@@ -32,6 +32,7 @@ abstract contract FreezeToken {
     }
 
     /** @custom:function-private */
+    
     /**
      * @notice Internal function to update the frozen status of a token.
      * @param tokenId The identifier of the token.

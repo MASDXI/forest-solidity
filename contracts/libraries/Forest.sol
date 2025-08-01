@@ -10,7 +10,7 @@ library Forest {
     /**
      * @dev Structure representing a transaction.
      */
-    struct Tx {
+    struct Txn {
         bytes32 root;
         bytes32 parent;
         uint256 value;
@@ -24,7 +24,7 @@ library Forest {
     struct DAG {
         mapping(address => uint256) nonces;
         mapping(bytes32 => uint256) hierarchy;
-        mapping(bytes32 => Tx) txs;
+        mapping(bytes32 => Txn) txs;
     }
 
     /**
@@ -64,59 +64,59 @@ library Forest {
      */
     error TransactionInsufficient(uint256 value, uint256 spend);
 
-    function contains(DAG storage self, bytes32 id) private view returns (bool) {
+    function contains(DAG storage self, bytes32 id) internal view returns (bool) {
         return self.txs[id].value != uint256(0);
     }
 
-    function calcTxHash(address account, uint256 nonce) internal view returns (bytes32) {
+    function calcTxnHash(address account, uint256 nonce) internal view returns (bytes32) {
         return keccak256(abi.encode(block.chainid, account, nonce));
     }
 
-    function getTx(DAG storage self, bytes32 id) internal view returns (Tx memory) {
+    function getTxn(DAG storage self, bytes32 id) internal view returns (Txn memory) {
         return self.txs[id];
     }
 
-    function getTxLevel(DAG storage self, bytes32 id) internal view returns (uint256) {
+    function getTxnLevel(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.txs[id].level;
     }
 
-    function getTxParent(DAG storage self, bytes32 id) internal view returns (bytes32) {
+    function getTxnParent(DAG storage self, bytes32 id) internal view returns (bytes32) {
         return self.txs[id].parent;
     }
 
-    function getTxRoot(DAG storage self, bytes32 id) internal view returns (bytes32) {
+    function getTxnRoot(DAG storage self, bytes32 id) internal view returns (bytes32) {
         return self.txs[id].root;
     }
 
-    function getTxValue(DAG storage self, bytes32 id) internal view returns (uint256) {
+    function getTxnValue(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.txs[id].value;
     }
 
-    function getTxCount(DAG storage self, address account) internal view returns (uint256) {
+    function getTxnCount(DAG storage self, address account) internal view returns (uint256) {
         return self.nonces[account];
     }
 
-    function getTxHierarchy(DAG storage self, bytes32 id) internal view returns (uint256) {
+    function getTxnHierarchy(DAG storage self, bytes32 id) internal view returns (uint256) {
         return self.hierarchy[id];
     }
 
-    function getTxOwner(DAG storage self, bytes32 id) internal view returns (address) {
+    function getTxnOwner(DAG storage self, bytes32 id) internal view returns (address) {
         return self.txs[id].owner;
     }
 
-    function createTx(DAG storage self, Tx memory newTx, address spender) internal {
-        if (newTx.value == 0) revert TransactionZeroValue();
-        bytes32 newId = calcTxHash(spender, self.nonces[spender]);
-        self.txs[newId] = Tx(newId, newTx.parent, newTx.value, newTx.level, newTx.owner);
+    function createTxn(DAG storage self, Txn memory newTxn, address spender) internal returns (bytes32 newId) {
+        if (newTxn.value == 0) revert TransactionZeroValue();
+        newId = calcTxnHash(spender, self.nonces[spender]);
+        self.txs[newId] = Txn(newId, newTxn.parent, newTxn.value, newTxn.level, newTxn.owner);
         unchecked {
             self.nonces[spender]++;
         }
 
-        emit TransactionCreated(newId, newTx.root, spender);
+        emit TransactionCreated(newId, newTxn.root, spender);
     }
 
-    function spendTx(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
-        Tx storage ptr = self.txs[id];
+    function spendTxn(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
+        Txn storage ptr = self.txs[id];
         if (msg.sender != ptr.owner) revert TransactionUnauthorized();
         uint256 currentValue = ptr.value;
         if (currentValue == 0) revert TransactionNotExist();
@@ -127,7 +127,7 @@ library Forest {
             uint256 currentHierarchy = self.hierarchy[currentRoot];
             uint256 newLevel = (ptr.level + 1);
             if (to != address(0)) {
-                createTx(self, Tx(currentRoot, id, value, newLevel, to), spender);
+                createTxn(self, Txn(currentRoot, id, value, newLevel, to), spender);
                 if (newLevel > currentHierarchy) {
                     self.hierarchy[currentRoot] = newLevel;
                 }

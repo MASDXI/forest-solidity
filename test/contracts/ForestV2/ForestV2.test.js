@@ -5,7 +5,7 @@ const {expect} = require("chai");
 const {encodeBytes32String, ZeroAddress, solidityPackedKeccak256, getBytes} = require("ethers");
 const {amount, freezeAmount, transferFrom, transfer, tokenMetadata} = require("../../utils/constant");
 
-describe("Forest", function () {
+describe("ForestV2", function () {
   async function deployTokenFixture() {
     const [owner, alice, bob, charlie, dave, otherAccount] = await ethers.getSigners();
     const contract = await ethers.getContractFactory("MockForestV2");

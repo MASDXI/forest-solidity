@@ -6,6 +6,10 @@ import "../abstracts/ForestTokenV2.sol";
 // import "../policies/FreezeBalance.sol";
 
 // @TODO
-abstract contract MockForestV2 is ForestTokenV2 /**, FreezeAddress, FreezeBalance*/ {
+contract MockForestV2 is ForestTokenV2 /**, FreezeAddress, FreezeBalance*/ {
     constructor(string memory name_, string memory symbol_) ForestTokenV2(name_, symbol_, "") {}
+
+    function mint(address account, uint256 value) public {
+        _mint(account, value, "");
+    }
 }

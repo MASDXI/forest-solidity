@@ -42,12 +42,6 @@ library Forest {
      * @param value The value that spent from the transaction.
      */
     event TransactionSpent(bytes32 indexed root, bytes32 id, uint256 value);
-    
-
-    /**
-     * @notice Error thrown when attempting to spend an not exist transaction.
-     */
-    error TransactionNotExist();
 
     /**
      * @notice Error thrown when a transaction is unauthorized.
@@ -59,6 +53,8 @@ library Forest {
      */
     error TransactionZeroValue();
 
+    error TransactionInvalidReceiver(address receiver);
+
     /**
      * @notice Error thrown when the spending value exceeds the transaction value.
      * @param value The value of the transaction.
@@ -66,6 +62,18 @@ library Forest {
      */
     error TransactionInsufficient(uint256 value, uint256 spend);
 
+    /** @custom:function-private */
+    function _createTxn(DAG storage self, Txn memory newTxn, address spender) private returns (bytes32 newId) {
+        newId = calcTxnHash(spender, self.nonces[spender]);
+        self.txns[newId] = Txn(newId, newTxn.parent, newTxn.value, newTxn.level, newTxn.owner);
+        unchecked {
+            self.nonces[spender]++;
+        }
+
+        emit TransactionCreated(newId, newTxn.root, spender);
+    }
+
+    /** @custom:function-internal */
     function contains(DAG storage self, bytes32 id) internal view returns (bool) {
         return self.txns[id].value != uint256(0);
     }
@@ -106,36 +114,29 @@ library Forest {
         return self.txns[id].owner;
     }
 
-    function createTxn(DAG storage self, Txn memory newTxn, address spender) internal returns (bytes32 newId) {
+    function createTxn(DAG storage self, Txn memory newTxn, address spender) internal returns (bytes32) {
         if (newTxn.value == 0) revert TransactionZeroValue();
-        newId = calcTxnHash(spender, self.nonces[spender]);
-        self.txns[newId] = Txn(newId, newTxn.parent, newTxn.value, newTxn.level, newTxn.owner);
-        unchecked {
-            self.nonces[spender]++;
-        }
-
-        emit TransactionCreated(newId, newTxn.root, spender);
+        if (newTxn.owner == address(0)) revert TransactionInvalidReceiver(address(0));
+        return _createTxn(self, newTxn, spender);
     }
 
     function spendTxn(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
         Txn storage ptr = self.txns[id];
         if (msg.sender != ptr.owner) revert TransactionUnauthorized();
         uint256 currentValue = ptr.value;
-        if (currentValue == 0) revert TransactionNotExist();
-        if (value > currentValue) revert TransactionInsufficient(currentValue, value);
+        if (value == 0 || value > currentValue) revert TransactionInsufficient(currentValue, value);
+        bytes32 currentRoot = ptr.root;
         unchecked {
             ptr.value = currentValue - value;
-            bytes32 currentRoot = ptr.root;
-            uint96 currentHierarchy = self.hierarchy[currentRoot];
             uint96 newLevel = (ptr.level + 1);
             if (to != address(0)) {
-                createTxn(self, Txn(currentRoot, id, value, newLevel, to), spender);
-                if (newLevel > currentHierarchy) {
+                _createTxn(self, Txn(currentRoot, id, value, newLevel, to), spender);
+                if (newLevel > self.hierarchy[currentRoot]) {
                     self.hierarchy[currentRoot] = newLevel;
                 }
             }
         }
 
-        emit TransactionSpent(ptr.root, id, value);
+        emit TransactionSpent(currentRoot, id, value);
     }
 }

@@ -21,19 +21,19 @@ interface IForest {
     /**
      * @notice Transfers tokens to a specified address.
      * @param to The recipient address.
-     * @param tokenId The unique identifier of the token.
+     * @param id The unique identifier of the token.
      * @param value The amount of tokens to transfer.
      * @return A boolean indicating whether the transfer was successful.
      */
-    function transfer(address to, bytes32 tokenId, uint256 value) external returns (bool);
+    function transfer(address to, bytes32 id, uint256 value) external returns (bool);
 
     /**
      * @notice Transfers tokens from one address to another.
      * @param from The address from which to transfer tokens.
      * @param to The address to which to transfer tokens.
-     * @param tokenId The unique identifier of the token.
+     * @param id The unique identifier of the token.
      * @param value The amount of tokens to transfer.
      * @return A boolean indicating whether the transferFrom was successful.
      */
-    function transferFrom(address from, address to, bytes32 tokenId, uint256 value) external returns (bool);
+    function transferFrom(address from, address to, bytes32 id, uint256 value) external returns (bool);
 }

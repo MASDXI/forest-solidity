@@ -31,9 +31,6 @@ module.exports = {
     enabled: true,
   },
   warnings: {
-    "contracts/abstracts/eUTXOToken.sol": {
-      "unused-param": "off",
-    },
     "contracts/abstracts/ForestToken.sol": {
       "unused-param": "off",
     },

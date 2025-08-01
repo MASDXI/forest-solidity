@@ -95,7 +95,7 @@ abstract contract FreezePartialTokens {
      * @param account The address of the account.
      * @return The frozen balance of the account.
      */
-    function partialTokensOf(address account) public view returns (uint256) {
+    function frozenBalanceOf(address account) public view returns (uint256) {
         return _frozenTokens[account];
     }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@masdxi/forest",
+  "name": "@masdxi/forest-solidity",
   "private": false,
   "version": "1.0.0-rc1",
   "license": "Apache-2.0",
@@ -9,7 +9,8 @@
     "abstracts/**/*",
     "interfaces/**/*",
     "libraries/**/*",
-    "!**/extensions/**/*"
+    "policies/**/*",
+    "!mocks/**/*"
   ],
   "repository": "https://github.com/MASDXI/Forest.git",
   "scripts": {},

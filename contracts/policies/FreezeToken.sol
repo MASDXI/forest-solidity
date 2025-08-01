@@ -35,11 +35,11 @@ abstract contract FreezeToken {
     /**
      * @notice Internal function to update the frozen status of a token.
      * @param tokenId The identifier of the token.
-     * @param auth The status to set for the token, true to freeze, false to unfreeze.
+     * @param freeze The status to set for the token, true to freeze, false to unfreeze.
      */
-    function _updateSuspendToken(bytes32 tokenId, bool auth) private {
-        _frozenToken[tokenId] = auth;
-        emit frozenToken(tokenId, auth);
+    function _updateFreezeToken(bytes32 tokenId, bool freeze) private {
+        _frozenToken[tokenId] = freeze;
+        emit frozenToken(tokenId, freeze);
     }
 
     /**
@@ -51,7 +51,7 @@ abstract contract FreezeToken {
         if (_frozenToken[tokenId]) {
             revert TokenFrozen();
         }
-        _updateSuspendToken(tokenId, true);
+        _updateFreezeToken(tokenId, true);
     }
 
     /**
@@ -63,7 +63,7 @@ abstract contract FreezeToken {
         if (!_frozenToken[tokenId]) {
             revert TokenNotFrozen();
         }
-        _updateSuspendToken(tokenId, false);
+        _updateFreezeToken(tokenId, false);
     }
 
     /**

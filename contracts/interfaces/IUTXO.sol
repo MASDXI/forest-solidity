@@ -28,18 +28,18 @@ interface IUTXO {
     /**
      * @notice Transfers tokens using the UTXO model.
      * @param to The recipient address.
-     * @param tokenId The identifier of the token transaction.
+     * @param id The identifier of the token transaction.
      * @param value The amount of tokens to transfer.
      * @param signature The signature associated with the transaction.
      * @return true if the transfer is successful, otherwise false.
      */
-    function transfer(address to, bytes32 tokenId, uint256 value, bytes memory signature) external returns (bool);
+    function transfer(address to, bytes32 id, uint256 value, bytes memory signature) external returns (bool);
 
     /**
      * @notice Transfers tokens from one address to another using the UTXO model.
      * @param from The sender address.
      * @param to The recipient address.
-     * @param tokenId The identifier of the token transaction.
+     * @param id The identifier of the token transaction.
      * @param value The amount of tokens to transfer.
      * @param signature The signature associated with the transaction.
      * @return true if the transfer is successful, otherwise false.
@@ -47,7 +47,7 @@ interface IUTXO {
     function transferFrom(
         address from,
         address to,
-        bytes32 tokenId,
+        bytes32 id,
         uint256 value,
         bytes memory signature
     ) external returns (bool);

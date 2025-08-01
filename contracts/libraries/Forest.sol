@@ -15,7 +15,7 @@ library Forest {
         bytes32 root;
         bytes32 parent;
         uint256 value;
-        uint256 level;
+        uint96 level;
         address owner;
     }
 
@@ -24,7 +24,7 @@ library Forest {
      */
     struct DAG {
         mapping(address => uint256) nonces;
-        mapping(bytes32 => uint256) hierarchy;
+        mapping(bytes32 => uint96) hierarchy;
         mapping(bytes32 => Txn) txns;
     }
 
@@ -41,7 +41,8 @@ library Forest {
      * @param id The identifier of the transaction.
      * @param value The value that spent from the transaction.
      */
-    event TransactionSpent(bytes32 indexed id, uint256 value);
+    event TransactionSpent(bytes32 indexed root, bytes32 id, uint256 value);
+    
 
     /**
      * @notice Error thrown when attempting to spend an not exist transaction.
@@ -125,8 +126,8 @@ library Forest {
         unchecked {
             ptr.value = currentValue - value;
             bytes32 currentRoot = ptr.root;
-            uint256 currentHierarchy = self.hierarchy[currentRoot];
-            uint256 newLevel = (ptr.level + 1);
+            uint96 currentHierarchy = self.hierarchy[currentRoot];
+            uint96 newLevel = (ptr.level + 1);
             if (to != address(0)) {
                 createTxn(self, Txn(currentRoot, id, value, newLevel, to), spender);
                 if (newLevel > currentHierarchy) {
@@ -135,6 +136,6 @@ library Forest {
             }
         }
 
-        emit TransactionSpent(id, value);
+        emit TransactionSpent(ptr.root, id, value);
     }
 }

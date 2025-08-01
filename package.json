@@ -8,14 +8,14 @@
   "scripts": {
     "besu:start": "cd $(pwd)/blockchain/besu && $(pwd)/scripts/start.sh",
     "besu:stop": "cd $(pwd)/blockchain/besu && $(pwd)/scripts/stop.sh",
-    "build": "npx hardhat clean && npx hardhat test && npx hardhat compile",
+    "build": "npx hardhat clean && npx hardhat compile && npx hardhat test",
     "clean": "npx hardhat clean",
     "compile": "npx hardhat compile",
     "coverage": "npx hardhat coverage",
     "node:start": "npx hardhat node",
     "simulation": "echo \"Not implemented yet.\"",
-    "test": "npx hardhat clean && npx hardhat test",
-    "test:parallel": "npx hardhat clean && npx hardhat test --parallel",
+    "test": "npx hardhat test",
+    "test:parallel": "npx hardhat test --parallel",
     "install:requirements": "pip install -r requirements.txt",
     "format": "npx prettier --write ."
   },

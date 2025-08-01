@@ -18,14 +18,11 @@ contract MockForest is ForestToken, FreezeAddress, FreezePartialTokens, FreezeTo
     struct Restrict {
         RESTRICT_TYPES types;
         bool enable;
-        uint256 start;
-        uint256 end;
+        uint96 start;
+        uint96 end;
     }
 
     mapping(bytes32 => Restrict) private _restricts;
-
-    /// @custom:event for keep tracking token from root.
-    event Transfer(address from, address to, bytes32 indexed root, bytes32 indexed parent, uint256 value);
 
     constructor(string memory name_, string memory symbol_) ForestToken(name_, symbol_) {}
 
@@ -97,8 +94,6 @@ contract MockForest is ForestToken, FreezeAddress, FreezePartialTokens, FreezeTo
         checkFrozenToken(tokenId)
     {
         super._transfer(from, to, tokenId, value);
-        Forest.Txn memory txn = _transaction(tokenId);
-        emit Transfer(from, to, txn.root, txn.parent, value);
     }
 
     function mint(address account, uint256 value) public {
@@ -109,7 +104,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezePartialTokens, FreezeTo
         _burnTransaction(account, tokenId, value);
     }
 
-    function setPartition(bytes32 tokenId, uint256 start, uint256 end, RESTRICT_TYPES restrict) public {
+    function setPartition(bytes32 tokenId, uint96 start, uint96 end, RESTRICT_TYPES restrict) public {
         bytes32 rootTokenId = _transaction(tokenId).root;
         _restricts[rootTokenId].types = restrict;
         _restricts[rootTokenId].enable = true;

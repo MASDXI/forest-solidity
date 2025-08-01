@@ -7,7 +7,13 @@ import "../abstracts/extensions/FreezeBalance.sol";
 import "../abstracts/extensions/FreezeToken.sol";
 
 contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
-    enum RESTRICT_TYPES { NULL, EQUAL, LESS, GREATER, BETWEEN }
+    enum RESTRICT_TYPES {
+        NULL,
+        EQUAL,
+        LESS,
+        GREATER,
+        BETWEEN
+    }
 
     struct Restrict {
         RESTRICT_TYPES types;
@@ -24,7 +30,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     constructor(string memory name_, string memory symbol_) ForestToken(name_, symbol_) {}
 
     modifier checkFrozenRootOrParent(bytes32 tokenId) {
-        Forest.Tx memory transaction = _transaction(tokenId);
+        Forest.Txn memory transaction = _transaction(tokenId);
         if (isTokenFrozen(transaction.root) || isTokenFrozen(transaction.parent)) {
             revert TokenFrozen();
         }
@@ -50,7 +56,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         }
         _;
     }
-    
+
     modifier checkFrozenAfterLevel(bytes32 tokenId) {
         Restrict memory restrict = getPartition(tokenId);
         uint256 txLevel = transactionLevel(tokenId);
@@ -61,7 +67,7 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         }
         _;
     }
-    
+
     /** @dev restrict in partitioning style */
     modifier checkFrozenInBetweenLevel(bytes32 tokenId) {
         // check root equal check greater than 'x' and less than 'y'
@@ -74,8 +80,8 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         }
         _;
     }
-    
-    /** @notice ERC20 Transfer also emit. */ 
+
+    /** @notice ERC20 Transfer also emit. */
     function _transfer(
         address from,
         address to,
@@ -90,9 +96,8 @@ contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
         checkFrozenRootOrParent(tokenId)
         checkFrozenToken(tokenId)
     {
-        
         super._transfer(from, to, tokenId, value);
-        Forest.Tx memory txn = _transaction(tokenId);
+        Forest.Txn memory txn = _transaction(tokenId);
         emit Transfer(from, to, txn.root, txn.parent, value);
     }
 

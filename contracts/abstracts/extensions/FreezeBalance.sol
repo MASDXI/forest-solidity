@@ -7,15 +7,17 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice This contract allows freezing and unfreezing of account balances. It does not include access control mechanisms.
  */
 abstract contract FreezeBalance {
+    /** @custom:storage */
     mapping(address => uint256) private _frozenBalance;
 
-    /** errors */
+    /**  @custom:errors */
     error BalanceOverflow();
     error BalanceFrozen(uint256 balance, uint256 frozenBalance);
 
-    /** events */
+    /**  @custom:events */
     event FrozenBalance(address indexed account, uint256 value);
 
+    /** @custom:modifier */
     /**
      * @notice Modifier to check if an account's balance can be spent, considering the frozen balance.
      * @param account The address of the account.
@@ -29,6 +31,7 @@ abstract contract FreezeBalance {
         _;
     }
 
+    /** @custom:function-public */
     /**
      * @notice Sets the frozen balance of an account.
      * @param account The address of the account.

@@ -3,7 +3,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 import {UnspentTransactionOutput as UTXO} from "../libraries/UTXO.sol";
 import {IUTXO} from "../interfaces/IUTXO.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 /**
  * @title UTXO Token Contract
@@ -12,8 +12,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * Implements the IUTXO interface.
  */
 abstract contract UTXOToken is ERC20, IUTXO {
+    /** @custom:library */
     using UTXO for UTXO.UTXO;
 
+    /** @custom:storage */
     UTXO.UTXO private _UTXO;
 
     /**

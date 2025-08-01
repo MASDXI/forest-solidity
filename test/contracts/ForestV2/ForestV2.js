@@ -8,7 +8,7 @@ const {amount, freezeAmount, transferFrom, transfer, tokenMetadata} = require(".
 describe("Forest", function () {
   async function deployTokenFixture() {
     const [owner, alice, bob, charlie, dave, otherAccount] = await ethers.getSigners();
-    const contract = await ethers.getContractFactory("MockForest");
+    const contract = await ethers.getContractFactory("MockForestV2");
     const token = await contract.deploy(tokenMetadata.name, tokenMetadata.symbol);
 
     return {token, owner, alice, bob, charlie, otherAccount};

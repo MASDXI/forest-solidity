@@ -7,15 +7,17 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice This contract allows freezing and unfreezing of addresses. It does not include access control mechanisms.
  */
 abstract contract FreezeAddress {
+    /** @custom:storage */
     mapping(address => bool) private _frozen;
 
-    /** errors */
+    /** @custom:errors */
     error AddressFrozen();
     error AddressNotFrozen();
 
-    /** events */
+    /** @custom:events */
     event FrozenAddress(address indexed account, bool indexed auth);
 
+    /** @custom:modifier */
     modifier checkFrozenAddress(address from, address to) {
         if (isFrozen(from) || isFrozen(to)) {
             revert AddressFrozen();
@@ -23,6 +25,7 @@ abstract contract FreezeAddress {
         _;
     }
 
+    /** @custom:function-private */
     /**
      * @notice Internal function to update the frozen status of an address.
      * @param account The address to update.

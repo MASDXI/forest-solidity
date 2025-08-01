@@ -7,15 +7,17 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice This contract allows tokens to be frozen and unfrozen. It does not include access control mechanisms.
  */
 abstract contract FreezeToken {
+    /** @custom:storage */
     mapping(bytes32 => bool) private _frozenToken;
 
-    /** errors */
+    /**  @custom:errors */
     error TokenFrozen();
     error TokenNotFrozen();
 
-    /** events */
+    /**  @custom:events */
     event frozenToken(bytes32 indexed tokenId, bool indexed auth);
 
+    /** @custom:modifier */
     /**
      * @notice Modifier to check if a token is frozen.
      * @param tokenId The identifier of the token.
@@ -27,6 +29,7 @@ abstract contract FreezeToken {
         _;
     }
 
+    /** @custom:function-private */
     /**
      * @notice Internal function to update the frozen status of a token.
      * @param tokenId The identifier of the token.

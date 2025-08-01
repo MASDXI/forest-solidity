@@ -1,7 +1,9 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: Apache-2.0
 
 import {Forest} from "../libraries/Forest.sol";
 import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
+import {IERC5615} from "../interfaces/IERC5615.sol";
+import {IERC1155Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 /**
  * @title Forest Token V2
@@ -10,7 +12,7 @@ import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 
-abstract contract ForestTokenV2 is IERC1155 {
+abstract contract ForestTokenV2 is IERC1155, IERC1155Errors, IERC5615 {
     /** @custom:library */
     using Forest for Forest.DAG;
 
@@ -31,8 +33,6 @@ abstract contract ForestTokenV2 is IERC1155 {
         _symbol = symbol_;
         _uri = uri_;
     }
-
-    /** @custom:function-private */
 
     /** @custom:function-internal */
     function _mint(address to, uint256 value) internal returns (uint256 id) {
@@ -76,11 +76,13 @@ abstract contract ForestTokenV2 is IERC1155 {
     }
 
     function _burnBatch(address from, uint256[] memory ids, uint256[] memory values) internal {
+        if (ids.length != values.length) {
+            revert ERC1155InvalidArrayLength(ids.length, values.length);
+        }
         if (from == address(0)) revert();
-        uint256 idsLength = ids.length;
-        if (idsLength != values.length) revert();
+
         address operator = msg.sender;
-        for (uint256 i = 0; i < idsLength; i++) {
+        for (uint256 i = 0; i < ids.length; i++) {
             _dag.spendTxn(bytes32(ids[i]), from, address(0), values[i]);
         }
 
@@ -94,7 +96,12 @@ abstract contract ForestTokenV2 is IERC1155 {
         uint256 value,
         bytes memory data
     ) internal virtual {
-        if (to == address(0)) revert();
+        if (to == address(0)) {
+            revert ERC1155InvalidReceiver(address(0));
+        }
+        if (from == address(0)) {
+            revert ERC1155InvalidSender(address(0));
+        }
         address operator = msg.sender;
         _dag.spendTxn(bytes32(id), from, to, value);
 
@@ -109,18 +116,32 @@ abstract contract ForestTokenV2 is IERC1155 {
         uint256[] memory values,
         bytes memory data
     ) internal virtual {
-        uint256 idsLength = ids.length;
-        if (idsLength != values.length) revert();
-        if (to == address(0)) revert();
+        if (ids.length != values.length) {
+            revert ERC1155InvalidArrayLength(ids.length, values.length);
+        }
+        if (to == address(0)) {
+            revert ERC1155InvalidReceiver(address(0));
+        }
+        if (from == address(0)) {
+            revert ERC1155InvalidSender(address(0));
+        }
 
         address operator = msg.sender;
 
-        for (uint256 i = 0; i < idsLength; ++i) {
+        for (uint256 i = 0; i < ids.length; ++i) {
             _dag.spendTxn(bytes32(ids[i]), from, to, values[i]);
         }
 
         emit TransferBatch(operator, from, to, ids, values);
         // @TODO check on receive
+    }
+
+    function _setApprovalForAll(address owner, address operator, bool approved) internal virtual {
+        if (operator == address(0)) {
+            revert ERC1155InvalidOperator(address(0));
+        }
+        _operatorApprovals[owner][operator] = approved;
+        emit ApprovalForAll(owner, operator, approved);
     }
 
     function _setURI(string memory uri) internal virtual {
@@ -129,22 +150,58 @@ abstract contract ForestTokenV2 is IERC1155 {
 
     /** @custom:function-public */
 
-    function decimals() public pure virtual returns (uint8) {
-        return 18;
+    /** @dev See {IERC1155.balanceOf}. */
+    function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
+        return _dag.getTxnValue(bytes32(id));
     }
 
-    function isApprovedForAll(address account, address operator) public view virtual returns (bool) {
+    /** @dev See {IERC1155.balanceOfBatch}. */
+    function balanceOfBatch(
+        address[] calldata accounts,
+        uint256[] calldata ids
+    ) public view virtual override returns (uint256[] memory) {
+        if (accounts.length != ids.length) {
+            revert ERC1155InvalidArrayLength(ids.length, accounts.length);
+        }
+
+        uint256[] memory batchBalances = new uint256[](accounts.length);
+
+        for (uint256 i = 0; i < accounts.length; ++i) {
+            batchBalances[i] = _dag.getTxnValue(bytes32(ids[i]));
+        }
+    }
+
+    /** @dev See {IERC1155.isApprovedForAll}. */
+    function isApprovedForAll(address account, address operator) public view virtual override returns (bool) {
         return _operatorApprovals[account][operator];
     }
 
+    /** @dev See {IERC20-totalSupply}. */
+    function totalSupply() public view returns (uint256) {
+        return _totalSupplyAll;
+    }
+
+    /** @dev See {IERC20Metadata.name}. */
     function name() public view virtual returns (string memory) {
         return _name;
     }
 
+    /** @dev See {IERC20Metadata.decimals}. */
+    function decimals() public pure virtual returns (uint8) {
+        return 18;
+    }
+
+    /** @dev See {IERC20Metadata.symbol}. */
+    function symbol() public view virtual returns (string memory) {
+        return _symbol;
+    }
+
+    /** @dev See {IERC1155.uri}. */
     function uri(uint256 /** id */) public view returns (string memory) {
         return _uri;
     }
 
+    /** @dev See {IERC1155.safeTransferFrom}. */
     function safeTransferFrom(
         address from,
         address to,
@@ -157,6 +214,7 @@ abstract contract ForestTokenV2 is IERC1155 {
         _safeTransferFrom(from, to, id, value, data);
     }
 
+    /** @dev See {IERC1155.safeBatchTransferFrom}. */
     function safeBatchTransferFrom(
         address from,
         address to,
@@ -165,20 +223,18 @@ abstract contract ForestTokenV2 is IERC1155 {
         bytes memory data
     ) public virtual override {
         // @TODO
-        // require(from == msg.sender || isApprovedForAll[from][msg.sender], "!OWNER_OR_APPROVED"); 
+        // require(from == msg.sender || isApprovedForAll[from][msg.sender], "!OWNER_OR_APPROVED");
         _safeBatchTransferFrom(from, to, ids, values, data);
     }
 
-    function symbol() public view virtual returns (string memory) {
-        return _symbol;
+    /** @dev See {IERC5615-exists}. */
+    function exists(uint256 id) external view returns (bool) {
+        return _dag.contains(bytes32(id));
     }
 
+    /** @dev See {IERC5615-totalSupply}. */
     function totalSupply(uint256 id) public view returns (uint256) {
         return _dag.getTxnValue(bytes32(id));
-    }
-
-    function totalSupply() public view returns (uint256) {
-        return _totalSupplyAll;
     }
 
     /** @custom:function-external */

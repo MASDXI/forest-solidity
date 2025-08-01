@@ -4,7 +4,9 @@ pragma solidity >=0.8.0 <0.9.0;
 /**
  * @title Interface for UTXO-based Token
  * @notice This interface defines methods for handling token transfers using the Unspent Transaction Output (UTXO) model.
+ * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 interface IUTXO {
     /**
      * @notice Error thrown when direct transfer is not supported.

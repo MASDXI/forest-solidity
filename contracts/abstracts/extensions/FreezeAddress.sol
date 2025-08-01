@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: UNLICENSE
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.8.0 <0.9.0;
 
 /**
  * @title FreezeAddress
  * @dev Abstract contract for managing frozen addresses, not implementing access control.
  * @notice This contract allows freezing and unfreezing of addresses. It does not include access control mechanisms.
+ * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 abstract contract FreezeAddress {
     /** @custom:storage */
     mapping(address => bool) private _frozen;

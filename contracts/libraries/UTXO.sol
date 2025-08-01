@@ -6,6 +6,7 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice This library implements the UTXO model for managing transactions on the blockchain.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 

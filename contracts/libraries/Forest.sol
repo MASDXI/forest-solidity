@@ -6,6 +6,7 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice Library containing data structures and functions for managing txns within a forest-like structure.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 library Forest {
     /**
      * @dev Structure representing a transaction.
@@ -64,7 +65,7 @@ library Forest {
      */
     error TransactionInsufficient(uint256 value, uint256 spend);
 
-    function contains(DAG storage self, bytes32 id) private view returns (bool) {
+    function contains(DAG storage self, bytes32 id) internal view returns (bool) {
         return self.txns[id].value != uint256(0);
     }
 

@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: UNLICENSE
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.8.0 <0.9.0;
 
 /**
  * @title FreezeBalance
  * @dev Abstract contract for managing frozen balances, not implementing access control.
  * @notice This contract allows freezing and unfreezing of account balances. It does not include access control mechanisms.
+ * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 abstract contract FreezeBalance {
     /** @custom:storage */
     mapping(address => uint256) private _frozenBalance;

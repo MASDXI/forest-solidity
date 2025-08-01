@@ -11,13 +11,15 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * @notice This contract manages transactions in a forest-like structure using the Forest library.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 abstract contract ForestToken is ERC20, IForest {
     /** @custom:library */
     using Forest for Forest.DAG;
 
     /** @custom:storage */
     Forest.DAG private _dag;
-    
+
+    /** @custom:constructor */
     /**
      * @dev Constructor to initialize the ERC20 token with a name and symbol.
      * @param name_ The name of the token.
@@ -25,6 +27,7 @@ abstract contract ForestToken is ERC20, IForest {
      */
     constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) {}
 
+    /** @custom:function-internal */
     /**
      * @dev Retrieves the details of a transaction.
      * @param tokenId The identifier of the transaction.
@@ -34,27 +37,13 @@ abstract contract ForestToken is ERC20, IForest {
         return _dag.getTxn(tokenId);
     }
 
-    function transactionLevel(bytes32 tokenId) internal view returns (uint256) {
-        return _dag.getTxnLevel(tokenId);
-    }
-
-    function transactionParent(bytes32 tokenId) internal view returns (bytes32) {
-        return _dag.getTxnParent(tokenId);
-    }
-
-    function transactionRoot(bytes32 tokenId) internal view returns (bytes32) {
-        return _dag.getTxnRoot(tokenId);
-    }
-
-    function transactionValue(bytes32 tokenId) internal view returns (uint256) {
-        return _dag.getTxnValue(tokenId);
-    }
-
-    function transactionCount(address account) internal view returns (uint256) {
+    /** */
+    function _transactionCount(address account) internal view returns (uint256) {
         return _dag.getTxnCount(account);
     }
 
-    function transactionHierarchy(bytes32 tokenId) internal view returns (uint256) {
+    /** */
+    function _transactionHierarchy(bytes32 tokenId) internal view returns (uint256) {
         return _dag.getTxnHierarchy(tokenId);
     }
 
@@ -87,18 +76,25 @@ abstract contract ForestToken is ERC20, IForest {
      * @param value The amount of tokens to burn.
      */
     function _burnTransaction(address account, bytes32 tokenId, uint256 value) internal {
-       _dag.spendTxn(tokenId, account, address(0), value);
+        _dag.spendTxn(tokenId, account, address(0), value);
         _burn(account, value);
     }
 
+    /** @custom:function-public */
     /**
-     * @dev Overrides the ERC20 transfer function to revert.
-     * @param to The recipient address.
-     * @param value The amount of tokens to transfer.
-     * @return Always reverts with ERC20TransferNotSupported error.
+     * @dev See {IERC20.transferFrom}.
+     * @custom:override Always reverts with ERC20TransferNotSupported error.
      */
     function transfer(address to, uint256 value) public virtual override returns (bool) {
         revert ERC20TransferNotSupported();
+    }
+
+    /**
+     * @dev See {IERC20.transferFrom}.
+     * @custom:override Always reverts with ERC20TransferFromNotSupported error.
+     */
+    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool) {
+        revert ERC20TransferFromNotSupported();
     }
 
     /**
@@ -107,17 +103,6 @@ abstract contract ForestToken is ERC20, IForest {
     function transfer(address to, bytes32 tokenId, uint256 value) public virtual override returns (bool) {
         _transfer(msg.sender, to, tokenId, value);
         return true;
-    }
-
-    /**
-     * @dev Overrides the ERC20 transferFrom function to revert.
-     * @param from The sender address.
-     * @param to The recipient address.
-     * @param value The amount of tokens to transfer.
-     * @return Always reverts with ERC20TransferFromNotSupported error.
-     */
-    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool) {
-        revert ERC20TransferFromNotSupported();
     }
 
     /**

@@ -11,6 +11,7 @@ import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
  * It provides methods to handle token transactions using UTXO data structures.
  * Implements the IUTXO interface.
  */
+
 abstract contract UTXOToken is ERC20, IUTXO {
     /** @custom:library */
     using UTXO for UTXO.UTXO;

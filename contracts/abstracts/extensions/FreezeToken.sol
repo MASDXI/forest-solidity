@@ -1,11 +1,13 @@
-// SPDX-License-Identifier: UNLICENSE
+// SPDX-License-Identifier: Apache-2.0
 pragma solidity >=0.8.0 <0.9.0;
 
 /**
  * @title FreezeToken
  * @dev Abstract contract for managing frozen tokens, not implementing access control.
  * @notice This contract allows tokens to be frozen and unfrozen. It does not include access control mechanisms.
+ * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
+
 abstract contract FreezeToken {
     /** @custom:storage */
     mapping(bytes32 => bool) private _frozenToken;

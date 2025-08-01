@@ -59,7 +59,7 @@ abstract contract FreezePartialTokens {
         } else {
             if (_frozenTokens[userAddress] < value) {
                 //@TODO reasonable custom error.
-                revert(); 
+                revert();
             }
             unchecked {
                 _frozenTokens[userAddress] -= value;
@@ -72,7 +72,7 @@ abstract contract FreezePartialTokens {
     /** @custom:function-public */
     /**
      * @dev See {IERC3643.freezePartialTokens}
-     * @custom:reference 
+     * @custom:reference
      * {https://eips.ethereum.org/EIPS/eip-3643}.
      * {https://docs.erc3643.org/erc-3643/smart-contracts-library/permissioned-tokens/tokens-interface}.
      */
@@ -82,7 +82,7 @@ abstract contract FreezePartialTokens {
 
     /**
      * @dev See {IERC3643.unfreezePartialTokens}
-     * @custom:reference 
+     * @custom:reference
      * {https://eips.ethereum.org/EIPS/eip-3643}.
      * {https://docs.erc3643.org/erc-3643/smart-contracts-library/permissioned-tokens/tokens-interface}.
      */

@@ -6,7 +6,7 @@ pragma solidity >=0.8.0 <0.9.0;
  * @notice Library containing data structures and functions for managing txns within a forest-like structure.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
- 
+
 library Forest {
     /**
      * @dev Structure representing a transaction.
@@ -35,7 +35,7 @@ library Forest {
      * @param from The spender of the transaction.
      */
     event TransactionCreated(bytes32 indexed root, bytes32 id, address indexed from);
-    
+
     /**
      * @notice Event emitted when a transaction is spent.
      * @param id The identifier of the transaction.

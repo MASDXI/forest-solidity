@@ -46,10 +46,10 @@ abstract contract FreezeAddress {
 
         emit AddressFrozen(account, auth, initiator);
     }
-    
-    /** 
+
+    /**
      * @dev See {IERC3643.setAddressFrozen}
-     * @custom:reference 
+     * @custom:reference
      * {https://eips.ethereum.org/EIPS/eip-3643}.
      * {https://docs.erc3643.org/erc-3643/smart-contracts-library/permissioned-tokens/tokens-interface}.
      */
@@ -57,7 +57,7 @@ abstract contract FreezeAddress {
         _updateFreezeAddress(userAddress, freeze, msg.sender);
     }
 
-    /** 
+    /**
      * @dev See {IERC3643.isFrozen}
      * @custom:reference
      * {https://eips.ethereum.org/EIPS/eip-3643}.

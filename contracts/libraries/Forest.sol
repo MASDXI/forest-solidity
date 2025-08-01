@@ -3,7 +3,7 @@ pragma solidity >=0.8.0 <0.9.0;
 
 /**
  * @title Forest Model Library
- * @notice Library containing data structures and functions for managing txs within a forest-like structure.
+ * @notice Library containing data structures and functions for managing txns within a forest-like structure.
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 library Forest {
@@ -24,7 +24,7 @@ library Forest {
     struct DAG {
         mapping(address => uint256) nonces;
         mapping(bytes32 => uint256) hierarchy;
-        mapping(bytes32 => Txn) txs;
+        mapping(bytes32 => Txn) txns;
     }
 
     /**
@@ -65,7 +65,7 @@ library Forest {
     error TransactionInsufficient(uint256 value, uint256 spend);
 
     function contains(DAG storage self, bytes32 id) internal view returns (bool) {
-        return self.txs[id].value != uint256(0);
+        return self.txns[id].value != uint256(0);
     }
 
     function calcTxnHash(address account, uint256 nonce) internal view returns (bytes32) {
@@ -73,23 +73,23 @@ library Forest {
     }
 
     function getTxn(DAG storage self, bytes32 id) internal view returns (Txn memory) {
-        return self.txs[id];
+        return self.txns[id];
     }
 
     function getTxnLevel(DAG storage self, bytes32 id) internal view returns (uint256) {
-        return self.txs[id].level;
+        return self.txns[id].level;
     }
 
     function getTxnParent(DAG storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].parent;
+        return self.txns[id].parent;
     }
 
     function getTxnRoot(DAG storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].root;
+        return self.txns[id].root;
     }
 
     function getTxnValue(DAG storage self, bytes32 id) internal view returns (uint256) {
-        return self.txs[id].value;
+        return self.txns[id].value;
     }
 
     function getTxnCount(DAG storage self, address account) internal view returns (uint256) {
@@ -101,13 +101,13 @@ library Forest {
     }
 
     function getTxnOwner(DAG storage self, bytes32 id) internal view returns (address) {
-        return self.txs[id].owner;
+        return self.txns[id].owner;
     }
 
     function createTxn(DAG storage self, Txn memory newTxn, address spender) internal returns (bytes32 newId) {
         if (newTxn.value == 0) revert TransactionZeroValue();
         newId = calcTxnHash(spender, self.nonces[spender]);
-        self.txs[newId] = Txn(newId, newTxn.parent, newTxn.value, newTxn.level, newTxn.owner);
+        self.txns[newId] = Txn(newId, newTxn.parent, newTxn.value, newTxn.level, newTxn.owner);
         unchecked {
             self.nonces[spender]++;
         }
@@ -116,7 +116,7 @@ library Forest {
     }
 
     function spendTxn(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
-        Txn storage ptr = self.txs[id];
+        Txn storage ptr = self.txns[id];
         if (msg.sender != ptr.owner) revert TransactionUnauthorized();
         uint256 currentValue = ptr.value;
         if (currentValue == 0) revert TransactionNotExist();

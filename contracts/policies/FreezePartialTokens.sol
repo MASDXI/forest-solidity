@@ -5,6 +5,7 @@ pragma solidity >=0.8.0 <0.9.0;
  * @title FreezePartialTokens
  * @dev Abstract contract for managing frozen balances, not implementing access control.
  * @notice This contract allows freezing and unfreezing of account balances. It does not include access control mechanisms.
+ * inspired from: ERC-3643 T-REX
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 

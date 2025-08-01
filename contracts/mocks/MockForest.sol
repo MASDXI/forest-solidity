@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "../abstracts/ForestToken.sol";
-import "../abstracts/extensions/FreezeAddress.sol";
-import "../abstracts/extensions/FreezeBalance.sol";
-import "../abstracts/extensions/FreezeToken.sol";
+import "../policies/FreezeAddress.sol";
+import "../policies/FreezeBalance.sol";
+import "../policies/FreezeToken.sol";
 
 contract MockForest is ForestToken, FreezeAddress, FreezeBalance, FreezeToken {
     enum RESTRICT_TYPES {

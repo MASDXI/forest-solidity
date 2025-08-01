@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "../abstracts/UTXOToken.sol";
-import "../abstracts/extensions/FreezeAddress.sol";
-import "../abstracts/extensions/FreezeBalance.sol";
-import "../abstracts/extensions/FreezeToken.sol";
+import "../policies/FreezeAddress.sol";
+import "../policies/FreezeBalance.sol";
+import "../policies/FreezeToken.sol";
 
 contract MockUTXO is UTXOToken, FreezeAddress, FreezeBalance, FreezeToken {
     constructor(string memory name_, string memory symbol_) UTXOToken(name_, symbol_) {}

@@ -110,9 +110,6 @@ abstract contract ForestTokenV2 is ERC165, IERC1155, IERC1155Errors, IERC5615 {
     }
 
     function _burn(address from, uint256 id, uint256 value) internal {
-        if (from == address(0)) {
-            revert ERC1155InvalidSender(address(0));
-        }
         _dag.spendTxn(bytes32(id), from, address(0), value);
         unchecked {
             _totalSupply[id] -= value;
@@ -129,9 +126,9 @@ abstract contract ForestTokenV2 is ERC165, IERC1155, IERC1155Errors, IERC5615 {
         if (from == address(0)) {
             revert ERC1155InvalidSender(address(0));
         }
-        uint256 totalSupplyAll =  _totalSupply;
+        uint256 totalSupplyAll = _totalSupplyAll;
         unchecked {
-            for (uint256 i = 0; i < ids.length; ++)i {
+            for (uint256 i = 0; i < ids.length; ++i) {
                 _dag.spendTxn(bytes32(ids[i]), from, address(0), values[i]);
                 totalSupplyAll -= values[i];
             }

@@ -122,7 +122,7 @@ library Forest {
 
     function spendTxn(DAG storage self, bytes32 id, address spender, address to, uint256 value) internal {
         Txn storage ptr = self.txns[id];
-        if (msg.sender != ptr.owner) revert TransactionUnauthorized();
+        if (spender != ptr.owner) revert TransactionUnauthorized();
         uint256 currentValue = ptr.value;
         if (value == 0 || value > currentValue) revert TransactionInsufficient(currentValue, value);
         bytes32 currentRoot = ptr.root;

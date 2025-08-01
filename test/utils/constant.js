@@ -1,8 +1,8 @@
 /** constant of token metadata */
 export const tokenMetadata = {
-    name: "mock",
-    symbol: "mock"
-}
+  name: "mock",
+  symbol: "mock",
+};
 
 /** constant of token amount */
 export const amount = 1000n;
@@ -18,6 +18,6 @@ export const transfer = {
 
 /** constant of transferFrom function */
 export const transferFrom = {
-    utxo: "transferFrom(address,address,bytes32,uint256,bytes)",
-    forest: "transferFrom(address,address,bytes32,uint256)"
-}
+  utxo: "transferFrom(address,address,bytes32,uint256,bytes)",
+  forest: "transferFrom(address,address,bytes32,uint256)",
+};

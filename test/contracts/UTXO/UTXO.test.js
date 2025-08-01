@@ -6,7 +6,7 @@ const {amount, freezeAmount, transferFrom, transfer, tokenMetadata} = require(".
 describe("UTXO", function () {
   async function deployTokenFixture() {
     const [owner, alice, bob, charlie, otherAccount] = await ethers.getSigners();
-    const contract = await ethers.getContractFactory("MockUtxo");
+    const contract = await ethers.getContractFactory("MockUTXO");
     const token = await contract.deploy(tokenMetadata.name, tokenMetadata.symbol);
 
     return {token, owner, alice, bob, charlie, otherAccount};
@@ -27,7 +27,7 @@ describe("UTXO", function () {
       expect(await token.balanceOf(aliceAddress)).to.equal(0);
       expect(await token.balanceOf(bobAddress)).to.equal(amount);
     });
-      
+
     it("transferFrom Alice to Bob", async function () {
       const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
       const spenderAddress = owner.address;
@@ -46,19 +46,43 @@ describe("UTXO", function () {
     });
 
     it("Freeze Alice Account and transferFrom", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      // TODO Freeze the account
     });
 
     it("Freeze Alice Balance and transfer", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      // TODO Freeze the balance
     });
 
     it("Freeze Alice Balance and transferFrom", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      // TODO Freeze the balance
     });
 
     it("Freeze Alice Token and transfer", async function () {
-      //  TODO
+      const {token, owner, alice, bob} = await loadFixture(deployTokenFixture);
+      const spenderAddress = owner.address;
+      const aliceAddress = alice.address;
+      const bobAddress = bob.address;
+      let tx = await token.mint(aliceAddress, amount);
+      tx = await tx.wait();
+      //  TODO Freeze the transaction
     });
   });
 

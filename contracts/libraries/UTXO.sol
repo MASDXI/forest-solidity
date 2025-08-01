@@ -4,6 +4,10 @@ pragma solidity >=0.8.0 <0.9.0;
 /**
  * @title Unspent Transaction Output Model (UTXO)
  * @notice This library implements the UTXO model for managing transactions on the blockchain.
+ * inspired from:
+ * https://gist.github.com/alex-miller-0/a5f4de3f811872b7272e66a3697f88de
+ * https://github.com/ProjectWyvern/wyvern-ethereum/blob/master/contracts/token/UTXORedeemableToken.sol
+ * https://github.com/olegfomenko/utxno
  * @author Sirawit Techavanitch (sirawit_tec@live4.utcc.ac.th)
  */
 
@@ -17,7 +21,7 @@ library UnspentTransactionOutput {
     /**
      * @dev Structure representing a transaction.
      */
-    struct Tx {
+    struct Txn {
         bytes32 input;
         uint256 value;
         address owner;
@@ -28,7 +32,7 @@ library UnspentTransactionOutput {
     /**
      * @dev Structure representing an input for a transaction.
      */
-    struct TxInput {
+    struct TxnInput {
         bytes32 outpoint;
         bytes signature;
     }
@@ -36,7 +40,7 @@ library UnspentTransactionOutput {
     /**
      * @dev Structure representing an output for a transaction.
      */
-    struct TxOutput {
+    struct TxnOutput {
         uint256 value;
         address account;
     }
@@ -46,7 +50,7 @@ library UnspentTransactionOutput {
      */
     struct UTXO {
         mapping(address => uint256) nonces;
-        mapping(bytes32 => Tx) txs;
+        mapping(bytes32 => Txn) txns;
     }
 
     /**
@@ -109,7 +113,7 @@ library UnspentTransactionOutput {
      * @return true if the transaction exists, false otherwise.
      */
     function _transactionExist(UTXO storage self, bytes32 id) private view returns (bool) {
-        return self.txs[id].value > 0;
+        return self.txns[id].value > 0;
     }
 
     /**
@@ -118,59 +122,59 @@ library UnspentTransactionOutput {
      * @param nonce The nonce associated with the creator.
      * @return The calculated transaction hash.
      */
-    function calcTxHash(address creator, uint256 nonce) internal view returns (bytes32) {
+    function calcTxnHash(address creator, uint256 nonce) internal view returns (bytes32) {
         return keccak256(abi.encode(block.chainid, creator, nonce));
     }
 
     /**
      * @notice Creates a new transaction output in the UTXO.
      * @param self The UTXO storage.
-     * @param txOutput The transaction output details.
+     * @param txnOutput The transaction output details.
      * @param input The input identifier of the transaction.
      * @param creator The creator of the transaction.
      */
-    function createTx(
+    function createTxn(
         UTXO storage self,
-        TxOutput memory txOutput,
+        TxnOutput memory txnOutput,
         bytes32 input,
         address creator,
         bytes32 extraData
     ) internal {
-        if (txOutput.value == 0) {
+        if (txnOutput.value == 0) {
             revert TransactionZeroValue();
         }
         uint256 nonce = self.nonces[creator];
-        bytes32 id = calcTxHash(creator, self.nonces[creator]);
-        self.txs[id] = Tx(input, txOutput.value, txOutput.account, false, extraData);
+        bytes32 id = calcTxnHash(creator, self.nonces[creator]);
+        self.txns[id] = Txn(input, txnOutput.value, txnOutput.account, false, extraData);
         unchecked {
             self.nonces[creator] = nonce++;
         }
 
-        emit TransactionCreated(id, creator, txOutput.account);
+        emit TransactionCreated(id, creator, txnOutput.account);
     }
 
     /**
      * @notice Spends a transaction in the UTXO.
      * @param self The UTXO storage.
-     * @param txInput The transaction input details.
+     * @param txnInput The transaction input details.
      * @param account The account spending the transaction.
      */
-    function spendTx(UTXO storage self, TxInput memory txInput, address account) internal {
-        if (!_transactionExist(self, txInput.outpoint)) {
+    function spendTxn(UTXO storage self, TxnInput memory txnInput, address account) internal {
+        if (!_transactionExist(self, txnInput.outpoint)) {
             revert TransactionNotExist();
         }
-        if (getTxSpent(self, txInput.outpoint)) {
+        if (getTxnSpent(self, txnInput.outpoint)) {
             revert TransactionAlreadySpent();
         }
         if (
-            keccak256(abi.encodePacked(txInput.outpoint)).toEthSignedMessageHash().recover(txInput.signature) ==
+            keccak256(abi.encodePacked(txnInput.outpoint)).toEthSignedMessageHash().recover(txnInput.signature) ==
             address(0)
         ) {
             revert TransactionUnauthorized();
         }
-        self.txs[txInput.outpoint].spent = true;
+        self.txns[txnInput.outpoint].spent = true;
 
-        emit TransactionSpent(txInput.outpoint, account);
+        emit TransactionSpent(txnInput.outpoint, account);
     }
 
     /**
@@ -178,13 +182,22 @@ library UnspentTransactionOutput {
      * @param self The UTXO storage.
      * @param id The identifier of the transaction to consume.
      */
-    function consumeTx(UTXO storage self, bytes32 id) internal {
+    function consumeTxn(UTXO storage self, bytes32 id) internal {
         if (!_transactionExist(self, id)) {
             revert TransactionNotExist();
         }
-        self.txs[id].spent = true;
+        self.txns[id].spent = true;
 
         emit TransactionConsumed(id);
+    }
+
+    /**
+     * @notice merge multiple transaction into single transaction.
+     * @param self The UTXO storage.
+     * @param ids The array of the identifiers of the transaction to merge.
+     */
+    function mergeTxn(UTXO storage self, bytes32[] memory ids) internal {
+        // @TODO
     }
 
     /**
@@ -193,8 +206,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return The transaction details.
      */
-    function transaction(UTXO storage self, bytes32 id) internal view returns (Tx memory) {
-        return self.txs[id];
+    function transaction(UTXO storage self, bytes32 id) internal view returns (Txn memory) {
+        return self.txns[id];
     }
 
     /**
@@ -203,8 +216,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return The transaction input identifier.
      */
-    function getTx(UTXO storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].input;
+    function getTxn(UTXO storage self, bytes32 id) internal view returns (bytes32) {
+        return self.txns[id].input;
     }
 
     /**
@@ -213,8 +226,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return The transaction input.
      */
-    function getTxInput(UTXO storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].input;
+    function getTxnInput(UTXO storage self, bytes32 id) internal view returns (bytes32) {
+        return self.txns[id].input;
     }
 
     /**
@@ -223,8 +236,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return The transaction value.
      */
-    function getTxValue(UTXO storage self, bytes32 id) internal view returns (uint256) {
-        return self.txs[id].value;
+    function getTxnValue(UTXO storage self, bytes32 id) internal view returns (uint256) {
+        return self.txns[id].value;
     }
 
     /**
@@ -233,8 +246,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return true if the transaction has been spent, false otherwise.
      */
-    function getTxSpent(UTXO storage self, bytes32 id) internal view returns (bool) {
-        return self.txs[id].spent;
+    function getTxnSpent(UTXO storage self, bytes32 id) internal view returns (bool) {
+        return self.txns[id].spent;
     }
 
     /**
@@ -243,8 +256,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return The owner address of the transaction.
      */
-    function getTxOwner(UTXO storage self, bytes32 id) internal view returns (address) {
-        return self.txs[id].owner;
+    function getTxnOwner(UTXO storage self, bytes32 id) internal view returns (address) {
+        return self.txns[id].owner;
     }
 
     /**
@@ -253,8 +266,8 @@ library UnspentTransactionOutput {
      * @param id The identifier of the transaction.
      * @return The extraData  of the transaction.
      */
-    function getTxExtraData(UTXO storage self, bytes32 id) internal view returns (bytes32) {
-        return self.txs[id].extraData;
+    function getTxnExtraData(UTXO storage self, bytes32 id) internal view returns (bytes32) {
+        return self.txns[id].extraData;
     }
 
     /**
@@ -263,7 +276,7 @@ library UnspentTransactionOutput {
      * @param account The account address.
      * @return The count of transactions.
      */
-    function getTxCount(UTXO storage self, address account) internal view returns (uint256) {
+    function getTxnCount(UTXO storage self, address account) internal view returns (uint256) {
         return self.nonces[account];
     }
 }

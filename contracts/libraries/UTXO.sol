@@ -15,6 +15,7 @@ import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 library UnspentTransactionOutput {
+    /** @custom:library */
     using ECDSA for bytes32;
     using MessageHashUtils for bytes32;
 

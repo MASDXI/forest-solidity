@@ -23,7 +23,6 @@ abstract contract FreezePartialTokens {
     error BalanceFrozen(uint256 balance, uint256 frozenBalance);
 
     /**  @custom:events */
-    
     /**
      * @dev See {IERC3643.TokensFrozen}.
      * @custom:reference {https://github.com/ERC-3643/ERC-3643/blob/main/contracts/token/IToken.sol}
@@ -37,7 +36,6 @@ abstract contract FreezePartialTokens {
     event TokensUnFrozen(address indexed userAddress, uint256 value);
 
     /** @custom:modifier */
-
     /**
      * @notice Modifier to check if an account's balance can be spent, considering the frozen balance.
      * @param account The address of the account.
@@ -52,7 +50,6 @@ abstract contract FreezePartialTokens {
     }
 
     /** @custom:function-internal */
-
     /** @dev */
     function _updateFreezePartialTokens(address userAddress, uint256 value, OPERATION_TYPES op) internal {
         if (op == OPERATION_TYPES.INCREMENT) {
@@ -73,7 +70,6 @@ abstract contract FreezePartialTokens {
     }
 
     /** @custom:function-public */
-
     /**
      * @dev See {IERC3643.freezePartialTokens}
      * @custom:reference 

@@ -12,7 +12,7 @@ abstract contract FreezeToken {
     /** @custom:storage */
     mapping(bytes32 => bool) private _frozenToken;
 
-    /**  @custom:errors */
+    /** @custom:errors */
     error TokenFrozen();
     error TokenNotFrozen();
 
@@ -32,7 +32,6 @@ abstract contract FreezeToken {
     }
 
     /** @custom:function-private */
-    
     /**
      * @notice Internal function to update the frozen status of a token.
      * @param tokenId The identifier of the token.

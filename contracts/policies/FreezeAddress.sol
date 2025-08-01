@@ -18,7 +18,6 @@ abstract contract FreezeAddress {
     // error UserAddressNotFrozen(address account);
 
     /** @custom:events */
-    
     /**
      * @dev See {IERC3643.AddressFrozen}
      * @custom:reference {https://github.com/ERC-3643/ERC-3643/blob/main/contracts/token/IToken.sol}.

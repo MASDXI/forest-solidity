@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {Forest} from "../libraries/Forest.sol";
-import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC5615} from "../interfaces/IERC5615.sol";
+import {IERC1155} from "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import {IERC1155Errors} from "@openzeppelin/contracts/interfaces/draft-IERC6093.sol";
 
 /**
@@ -149,7 +149,6 @@ abstract contract ForestTokenV2 is IERC1155, IERC1155Errors, IERC5615 {
     }
 
     /** @custom:function-public */
-
     /** @dev See {IERC1155.balanceOf}. */
     function balanceOf(address account, uint256 id) public view virtual override returns (uint256) {
         return _dag.getTxnValue(bytes32(id));
@@ -236,6 +235,4 @@ abstract contract ForestTokenV2 is IERC1155, IERC1155Errors, IERC5615 {
     function totalSupply(uint256 id) public view returns (uint256) {
         return _dag.getTxnValue(bytes32(id));
     }
-
-    /** @custom:function-external */
 }

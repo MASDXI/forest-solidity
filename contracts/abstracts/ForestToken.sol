@@ -97,17 +97,13 @@ abstract contract ForestToken is ERC20, IForest {
         revert ERC20TransferFromNotSupported();
     }
 
-    /**
-     * @inheritdoc IForest
-     */
+    /** @dev See {IForest.transfer}. */
     function transfer(address to, bytes32 tokenId, uint256 value) public virtual override returns (bool) {
         _transfer(msg.sender, to, tokenId, value);
         return true;
     }
 
-    /**
-     * @inheritdoc IForest
-     */
+    /** @dev See {IForest.transferFrom}. */
     function transferFrom(
         address from,
         address to,

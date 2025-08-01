@@ -19,12 +19,15 @@ abstract contract UTXOToken is ERC20, IUTXO {
     /** @custom:storage */
     UTXO.UTXO private _UTXO;
 
+    /** @custom:constructor */
     /**
      * @dev Constructor to initialize the ERC20 token with a name and symbol.
      * @param name_ The name of the token.
      * @param symbol_ The symbol of the token.
      */
     constructor(string memory name_, string memory symbol_) ERC20(name_, symbol_) {}
+
+    /** @custom:function-internal */
 
     /**
      * @dev Internal function to fetch a transaction details based on the token ID.
@@ -98,6 +101,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
         _burn(account, value);
     }
 
+    /** @custom:function-public */
     /**
      * @dev Function to fetch a transaction details based on the token ID.
      * @param tokenId The identifier of the token transaction.
@@ -152,16 +156,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
         return _UTXO.getTxnSpent(tokenId);
     }
 
-    /**
-     * @dev Function to transfer tokens (not supported in this contract).
-     */
-    function transfer(address to, uint256 value) public virtual override returns (bool) {
-        revert ERC20TransferNotSupported();
-    }
-
-    /**
-     * @inheritdoc IUTXO
-     */
+    /** @dev See {IUTXO.transfer}. */
     function transfer(
         address to,
         bytes32 tokenId,
@@ -172,16 +167,7 @@ abstract contract UTXOToken is ERC20, IUTXO {
         return true;
     }
 
-    /**
-     * @dev Function to transfer tokens from one address to another (not supported in this contract).
-     */
-    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool) {
-        revert ERC20TransferFromNotSupported();
-    }
-
-    /**
-     * @inheritdoc IUTXO
-     */
+    /** @dev See {IUTXO.transferFrom}. */
     function transferFrom(
         address from,
         address to,
@@ -192,5 +178,21 @@ abstract contract UTXOToken is ERC20, IUTXO {
         _spendAllowance(from, msg.sender, value);
         _transfer(from, to, tokenId, value, signature, bytes32(""));
         return true;
+    }
+
+    /**
+     * @dev See {IERC20.transferFrom}.
+     * @custom:override Always reverts with ERC20TransferNotSupported error.
+     */
+    function transfer(address to, uint256 value) public virtual override returns (bool) {
+        revert ERC20TransferNotSupported();
+    }
+
+    /**
+     * @dev See {IERC20.transferFrom}.
+     * @custom:override Always reverts with ERC20TransferFromNotSupported error.
+     */
+    function transferFrom(address from, address to, uint256 value) public virtual override returns (bool) {
+        revert ERC20TransferFromNotSupported();
     }
 }
